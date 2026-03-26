@@ -1,0 +1,95 @@
+# =============================================================================
+# ~/.config/starship.toml  —  Starship cross-shell prompt
+# Works in Bash, Zsh, and PowerShell.
+# Docs: https://starship.rs/config/
+# =============================================================================
+
+"$schema" = 'https://starship.rs/config-schema.json'
+palette = "jetbrains"
+
+[palettes.jetbrains]
+jb_blue   = "#3592C4"
+jb_green  = "#629755"
+jb_orange = "#ED9439"
+jb_purple = "#9D77BD"
+jb_yellow = "#FFC66D"
+jb_red    = "#FF6B68"
+jb_grey   = "#6B6B6B"
+jb_white  = "#A9B7C6"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$cmd_duration\
+$line_break\
+$python\
+$php\
+$nodejs\
+$character"""
+
+# ---- Directory --------------------------------------------------------------
+[directory]
+style             = "bold jb_blue"
+truncation_length = 4
+truncate_to_repo  = true
+
+# ---- Git --------------------------------------------------------------------
+[git_branch]
+symbol = " "
+style  = "bold jb_purple"
+
+[git_status]
+format     = '([\[$all_status$ahead_behind\]]($style) )'
+style      = "bold jb_red"
+conflicted = "⚠"
+ahead      = "⇡${count}"
+behind     = "⇣${count}"
+diverged   = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked  = "?"
+stashed    = "*"
+modified   = "!"
+staged     = "+"
+renamed    = "»"
+deleted    = "✘"
+
+# ---- Languages --------------------------------------------------------------
+[nodejs]
+symbol = " "
+style  = "bold jb_green"
+detect_files = ["package.json", ".node-version", "nvmrc", "package-lock.json", "npm-shrinkwrap.json", "yarn.lock", "pnpm-lock.yaml", "pnpm-workspace.yaml"]
+
+[php]
+symbol = " "
+style  = "bold jb_blue"
+detect_files = ["composer.json", ".php-version", "index.php"]
+detect_extensions = ["php"]
+
+[python]
+symbol = " "
+style  = "bold jb_yellow"
+
+# ---- Command duration -------------------------------------------------------
+[cmd_duration]
+min_time = 2000
+format   = " [$duration]($style) "
+style    = "bold jb_yellow"
+
+# ---- Prompt character -------------------------------------------------------
+[character]
+success_symbol = "[❯](bold jb_green)"
+error_symbol   = "[❯](bold jb_red)"
+
+# ---- Username (show only in SSH) --------------------------------------------
+[username]
+show_always = false
+style_user  = "bold cyan"
+format      = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style    = "bold cyan"
+format   = "[$hostname]($style) "

@@ -1,0 +1,26 @@
+# =============================================================================
+# ~/.zprofile  —  Zsh login shell config (macOS)
+# Sets PATH for Homebrew before anything else.
+# =============================================================================
+
+# ---- Path Guard (Emergency) -------------------------------------------------
+# Ensure core system paths are always present before doing anything else
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin${PATH:+:$PATH}"
+
+{{- if eq .chezmoi.os "darwin" }}
+# Homebrew: Detect and initialize
+if [[ "$(uname)" == "Darwin" ]]; then
+  if [[ "$(uname -m)" == "arm64" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+elif [[ "$(uname)" == "Linux" ]]; then
+  if [[ -d "/home/linuxbrew/.linuxbrew" ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  fi
+fi
+{{- end }}
+
+# Note: .zshrc is sourced automatically by Zsh for interactive shells.
+# Sourcing it here is usually redundant on macOS/WSL and causes double-initialization.

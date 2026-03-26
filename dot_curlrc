@@ -1,0 +1,22 @@
+# =============================================================================
+# ~/.curlrc  —  curl defaults
+# =============================================================================
+
+# Show errors even in silent mode
+--show-error
+
+# Follow redirects
+--location
+
+# Accept compressed responses
+--compressed
+
+# Set a reasonable timeout
+--connect-timeout 10
+--max-time 30
+
+# Fail silently on HTTP errors (4xx, 5xx)
+--fail
+
+# Show progress bar (not verbose noise)
+--no-progress-meter

@@ -1,0 +1,16 @@
+# Enforce LF line endings for all shell-related scripts
+# This prevents CRLF corruption when managing dotfiles on Windows and applying to Unix (macOS/WSL)
+
+*.sh text eol=lf
+*.zsh text eol=lf
+*.bash text eol=lf
+.exports text eol=lf
+.aliases text eol=lf
+.functions text eol=lf
+.zshrc text eol=lf
+.zprofile text eol=lf
+.bashrc text eol=lf
+.bash_profile text eol=lf
+
+# chezmoi templates
+*.tmpl text eol=lf

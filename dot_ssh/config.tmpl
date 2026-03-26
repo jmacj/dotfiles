@@ -1,0 +1,35 @@
+# =============================================================================
+# ~/.ssh/config  —  SSH client configuration
+# =============================================================================
+
+# ---- Machine-local overrides (not committed, must come first) ---------------
+Include ~/.ssh/config.local
+
+# ---- GitHub -----------------------------------------------------------------
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    PreferredAuthentications publickey
+
+# ---- GitLab -----------------------------------------------------------------
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    PreferredAuthentications publickey
+
+# ---- Global defaults (Last match doesn't win, FIRST match wins!) ------------
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/id_ed25519
+    StrictHostKeyChecking ask
+    ForwardAgent no
+    HashKnownHosts yes
+{{- if eq .chezmoi.os "darwin" }}
+    # Safe macOS-specific options
+    IgnoreUnknown UseKeychain
+    UseKeychain yes
+{{- end }}

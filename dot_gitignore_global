@@ -1,0 +1,94 @@
+# Global gitignore — applies to all repos on this machine
+# Add repo-specific ignores to <project>/.gitignore instead
+
+# ---- OS: macOS --------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# ---- OS: Windows ------------------------------------------------------------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ---- OS: Linux --------------------------------------------------------------
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ---- JetBrains (PhpStorm, IntelliJ, etc.) ----------------------------------
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# ---- VS Code ----------------------------------------------------------------
+.vscode/
+*.code-workspace
+.history/
+
+# ---- Vim / Neovim -----------------------------------------------------------
+*.swp
+*.swo
+*.swn
+.netrwhist
+tags
+
+# ---- Logs & temp files ------------------------------------------------------
+*.log
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+
+# ---- Environment files ------------------------------------------------------
+.env
+.env.local
+.env.*.local
+
+# ---- Build outputs ----------------------------------------------------------
+dist/
+build/
+*.o
+*.a
+*.so
+*.dll
+*.exe
+*.out
+
+# ---- Dependency directories -------------------------------------------------
+node_modules/
+vendor/
+.bundle/
+
+# ---- Certificates & secrets -------------------------------------------------
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+.secrets
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+*.ppk

@@ -1,0 +1,27 @@
+# =============================================================================
+# .gitignore  —  dotfiles repo gitignore
+# =============================================================================
+
+# chezmoi age encryption key (if used locally)
+key.txt
+*.age.key
+
+# Machine-local override files (not committed by design)
+.local_*
+*.local
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# Backups
+*.bak
+backups/

@@ -1,0 +1,12 @@
+#!/bin/bash
+# {{ include "macos/Brewfile" | sha256sum }}
+
+# This script is triggered by changes to macos/Brewfile
+# It works on both macOS and Linux (if Homebrew is installed)
+
+if command -v brew >/dev/null 2>&1; then
+    echo "Checking for Homebrew package updates..."
+    brew bundle --file="{{ .chezmoi.sourceDir }}/macos/Brewfile"
+else
+    echo "Homebrew not found. Skipping package installation."
+fi

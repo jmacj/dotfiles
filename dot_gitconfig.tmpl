@@ -1,0 +1,102 @@
+# =============================================================================
+# ~/.gitconfig  —  Global Git configuration
+# Machine-specific identity is injected via chezmoi templates.
+# =============================================================================
+
+[user]
+    name  = {{ .name }}
+    email = {{ .email }}
+
+[core]
+    autocrlf     = input           # LF in repo; convert CRLF on Windows checkout
+    eol          = lf
+    whitespace   = fix             # fix trailing whitespace and mixed tabs
+    excludesfile = ~/.gitignore_global
+    pager        = delta           # syntax-highlighted diffs via git-delta
+    quotepath    = false           # show non-ASCII chars literally
+{{- if eq .chezmoi.os "darwin" }}
+    precomposeunicode = true       # fix macOS Unicode normalization
+{{- end }}
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true                  # pull --rebase by default
+
+[push]
+    default       = current        # push to same-named remote branch
+    autoSetupRemote = true
+
+[fetch]
+    prune = true                   # remove stale remote-tracking branches
+    fsckObjects = true
+
+[receive]
+    fsckObjects = true
+
+[transfer]
+    fsckObjects = true
+
+[merge]
+    ff      = false                # always create a merge commit
+    conflictstyle = zdiff3         # better conflict markers (Git 2.35+)
+
+[help]
+    autocorrect = 1                # auto-run typo corrections (1-sec delay)
+
+[commit]
+    verbose = true                 # show diff in commit message editor
+
+[rebase]
+    autosquash = true              # auto-apply fixup!/squash! prefixes
+    autostash  = true
+
+[rerere]
+    enabled = true                 # reuse recorded resolutions
+
+[diff]
+    colorMoved = default
+
+[delta]
+    navigate      = true           # n/N to jump between diff sections
+    light         = false
+    side-by-side  = true
+    line-numbers  = true
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[interactive]
+    diffFilter = "delta --color-only"
+
+[color]
+    ui = auto
+
+# ---- Aliases ----------------------------------------------------------------
+[alias]
+    st        = status
+    co        = checkout
+    br        = branch
+    lg        = log --oneline --graph --decorate --all
+    lga       = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+    undo      = reset --soft HEAD~1
+    unstage   = restore --staged
+    stash-all = stash --include-untracked
+    alias     = config --get-regexp ^alias\\.
+    whoami    = !git config user.name && git config user.email
+    cleanup   = !f() { b=$(git branch --merged | grep -Ev '^[[:space:]]*[*+]|(main|master|develop)'); [ -n "$b" ] && echo "$b" | xargs git branch -d; }; f
+
+# ---- URL shortcuts ----------------------------------------------------------
+[url "git@github.com:"]
+    insteadOf = gh:
+
+[url "git@gitlab.com:"]
+    insteadOf = gl:
+
+# ---- Machine-local overrides (not committed) --------------------------------
+[include]
+    path = ~/.gitconfig.local

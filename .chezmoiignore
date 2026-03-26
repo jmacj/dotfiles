@@ -1,0 +1,33 @@
+# .chezmoiignore — Files to ignore when applying dotfiles
+# These files exist in the source repo but should NOT be copied to $HOME.
+
+# Repository metadata
+.git/
+.github/
+.gitignore
+.editorconfig
+
+# Documentation
+README.md
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+DOCUMENTATION.md
+PREREQUISITES.md
+
+# Build & Install scripts
+install.sh
+install.ps1
+windows/
+macos/
+
+# Un-ignore platform-specific automated scripts
+{{ if eq .chezmoi.os "windows" -}}
+!windows/run_onchange_after_windows_*.ps1
+{{ end -}}
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
+!macos/run_onchange_after_macos_*.sh
+{{ end -}}
+
+# chezmoi config (processed separately)
+.chezmoi.toml.tmpl

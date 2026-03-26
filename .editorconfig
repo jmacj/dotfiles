@@ -1,0 +1,52 @@
+# =============================================================================
+# .editorconfig  —  Cross-editor formatting rules
+# Respected by PhpStorm, VS Code, Vim, and most modern editors.
+# See https://editorconfig.org
+# =============================================================================
+
+root = true
+
+# ---- Defaults (all files) ---------------------------------------------------
+[*]
+charset              = utf-8
+end_of_line          = lf
+indent_style         = space
+indent_size          = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# ---- Web / config (2-space indent) ------------------------------------------
+[*.{js,jsx,ts,tsx,json,jsonc,json5,css,scss,sass,less,html,vue,svelte,yaml,yml,toml}]
+indent_size = 2
+
+# ---- PHP --------------------------------------------------------------------
+[*.php]
+indent_size = 4
+
+# ---- Shell scripts ----------------------------------------------------------
+[*.{sh,bash,zsh}]
+indent_size = 4
+
+# ---- Markdown ---------------------------------------------------------------
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+
+# ---- Makefile ---------------------------------------------------------------
+[Makefile]
+indent_style = tab
+
+# ---- Go ---------------------------------------------------------------------
+[*.go]
+indent_style = tab
+
+# ---- Rust -------------------------------------------------------------------
+[*.rs]
+indent_size = 4
+
+# ---- Python -----------------------------------------------------------------
+[*.py]
+indent_size = 4
+
+# ---- SQL --------------------------------------------------------------------
+[*.sql]
+indent_size = 4

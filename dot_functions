@@ -1,0 +1,107 @@
+# =============================================================================
+# ~/.functions  —  shell utility functions, sourced by .bashrc and .zshrc
+# =============================================================================
+
+# ---- mkcd: make directory and cd into it ------------------------------------
+mkcd() {
+  mkdir -p "$@" && cd "$_" || return
+}
+
+# ---- extract: decompress any archive ----------------------------------------
+extract() {
+  if [ -z "$1" ]; then
+    echo "Usage: extract <file>"
+    return 1
+  fi
+  if [ ! -f "$1" ]; then
+    echo "'$1' is not a file"
+    return 1
+  fi
+  case "$1" in
+    *.tar.bz2) tar xvjf "$1" ;;
+    *.tar.gz)  tar xvzf "$1" ;;
+    *.tar.xz)  tar xvJf "$1" ;;
+    *.tar)     tar xvf  "$1" ;;
+    *.bz2)     bunzip2  "$1" ;;
+    *.gz)      gunzip   "$1" ;;
+    *.zip)     unzip    "$1" ;;
+    *.7z)      7z x     "$1" ;;
+    *.rar)     unrar x  "$1" ;;
+    *.zst)     unzstd   "$1" ;;
+    *)         echo "Unknown archive format: '$1'" ; return 1 ;;
+  esac
+}
+
+# ---- port: kill process on a given port -------------------------------------
+port() {
+  if [ -z "$1" ]; then
+    echo "Usage: port <number>"
+    return 1
+  fi
+  local pid
+  # lsof preferred; fall back to fuser (available on most Linux without lsof)
+  pid=$(lsof -ti tcp:"$1" 2>/dev/null || fuser "$1/tcp" 2>/dev/null || true)
+  if [ -n "$pid" ]; then
+    echo "Killing process $pid on port $1"
+    kill -9 "$pid"
+  else
+    echo "No process found on port $1"
+  fi
+}
+
+# ---- weather: get weather report --------------------------------------------
+weather() {
+  local location="${1:-}"
+  curl -s "wttr.in/${location}?format=3"
+}
+
+# ---- backup: quick file backup with timestamp -------------------------------
+backup() {
+  if [ -z "$1" ]; then
+    echo "Usage: backup <file>"
+    return 1
+  fi
+  cp -v "$1" "${1}.bak.$(date +%Y%m%d_%H%M%S)"
+}
+
+# ---- up: go up N directories ------------------------------------------------
+up() {
+  local count="${1:-1}"
+  local path=''
+  for (( i=0; i<count; i++ )); do
+    path="../$path"
+  done
+  cd "$path" || return
+}
+
+# ---- gi: generate .gitignore from gitignore.io ------------------------------
+gi() {
+  curl -sL "https://www.toptal.com/developers/gitignore/api/$*"
+}
+
+# ---- httpheaders: print HTTP headers for a URL ------------------------------
+httpheaders() {
+  curl -sI "$1" | sort
+}
+
+# ---- reload_shell -----------------------------------------------------------
+reload_shell() {
+  exec "$SHELL" -l
+}
+
+# ---- is_wsl: returns 0 if running in WSL ------------------------------------
+is_wsl() {
+  grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null
+}
+
+# ---- path_add: adds a directory to PATH if it exists and isn't already there -
+path_add() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    export PATH="$1:$PATH"
+  fi
+}
+
+# ---- path_remove: removes a directory from PATH -----------------------------
+path_remove() {
+  export PATH=$(echo -n "$PATH" | tr ":" "\n" | grep -v "^{$1}$" | tr "\n" ":" | sed "s/:$//")
+}

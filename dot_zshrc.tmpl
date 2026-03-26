@@ -1,0 +1,75 @@
+# =============================================================================
+# ~/.zshrc  —  Zsh config (macOS primary, also works on Linux)
+# =============================================================================
+
+# Source shared config
+[ -f "$HOME/.exports" ] && source "$HOME/.exports"
+[ -f "$HOME/.aliases" ] && source "$HOME/.aliases"
+[ -f "$HOME/.functions" ] && source "$HOME/.functions"
+
+# ---- Zsh options ------------------------------------------------------------
+setopt AUTO_CD              # type dir name to cd
+setopt CORRECT              # spell correction for commands
+setopt HIST_IGNORE_DUPS     # don't record duplicates
+setopt HIST_IGNORE_SPACE    # don't record commands starting with space
+setopt SHARE_HISTORY        # share history across sessions
+setopt EXTENDED_HISTORY     # record timestamp of command
+setopt INC_APPEND_HISTORY   # write to history immediately
+
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=20000
+
+# ---- Completion -------------------------------------------------------------
+autoload -Uz compinit && compinit -i # -i ignores insecure directories (standards best practice)
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' # case-insensitive + smart partial
+zstyle ':completion:*' completer _expand _complete _ignored _approximate # add approximation
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:descriptions' format ' %F{purple}-- %d --%f'
+
+# ---- Plugins (Auto-detect) --------------------------------------------------
+# Search paths for common plugins (Homebrew, Linux, local)
+PLUGIN_PATHS=(
+  "/opt/homebrew/share"
+  "/usr/local/share"
+  "/usr/share"
+  "$HOME/.local/share"
+)
+
+for plugin_path in "${PLUGIN_PATHS[@]}"; do
+  [ ! -d "$plugin_path" ] && continue # optimization: skip missing base paths
+  # Syntax highlighting
+  [ -f "$plugin_path/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
+    source "$plugin_path/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  # Auto-suggestions
+  [ -f "$plugin_path/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
+    source "$plugin_path/zsh-autosuggestions/zsh-autosuggestions.zsh"
+done
+
+# ---- Key bindings -----------------------------------------------------------
+bindkey -e                    # emacs key bindings
+bindkey '^[[A' history-search-backward  # up arrow
+bindkey '^[[B' history-search-forward   # down arrow
+
+{{- if eq .chezmoi.os "darwin" }}
+# ---- Homebrew completions ---------------------------------------------------
+if command -v brew &>/dev/null; then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
+fi
+{{- end }}
+
+# ---- nvm --------------------------------------------------------------------
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+
+# ---- fzf --------------------------------------------------------------------
+[ -f "$HOME/.config/fzf/fzf.zsh" ] && source "$HOME/.config/fzf/fzf.zsh"
+
+# ---- Starship prompt --------------------------------------------------------
+command -v starship &>/dev/null && eval "$(starship init zsh)"
+
+# ---- Local overrides (not committed) ----------------------------------------
+[ -f "$HOME/.local_zshrc" ] && source "$HOME/.local_zshrc"

@@ -1,0 +1,34 @@
+# =============================================================================
+# ~/.config/ripgrep/ripgreprc  —  ripgrep default flags
+# Loaded via RIPGREP_CONFIG_PATH
+# =============================================================================
+
+# Case-insensitive search unless pattern has uppercase
+--smart-case
+
+# Custom types
+--type-add=web:*.{html,css,js,ts,tsx,vue,php,scss,less,md}
+
+# Follow symlinks
+--follow
+
+# Search hidden files/dirs (but still respect .gitignore)
+--hidden
+
+# Common directories to always ignore
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!vendor/*
+--glob=!.idea/*
+--glob=!dist/*
+--glob=!build/*
+--glob=!*.min.js
+--glob=!*.lock
+--glob=!package-lock.json
+
+# Show line numbers
+--line-number
+
+# Trim long lines in output
+--max-columns=150
+--max-columns-preview

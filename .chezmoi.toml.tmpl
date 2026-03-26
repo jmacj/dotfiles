@@ -1,0 +1,14 @@
+[data]
+    name = "{{ promptStringOnce . "name" "Full name" }}"
+    email = "{{ promptStringOnce . "email" "Email address" }}"
+    context = "{{ promptStringOnce . "context" "Context (personal/work)" }}"
+
+[git]
+    autoCommit = true
+    autoPush = true
+
+[diff]
+    pager = "delta"
+
+[edit]
+    apply = true

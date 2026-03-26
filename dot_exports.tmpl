@@ -1,0 +1,98 @@
+# =============================================================================
+# ~/.exports  —  environment variables, sourced by .bashrc and .zshrc
+# =============================================================================
+
+# ---- Path Guard (Emergency) -------------------------------------------------
+# Ensure core system paths are always present before doing anything else
+if [[ -n "$ZSH_VERSION" ]]; then
+  # Zsh-specific robust path handling (using the 'path' array)
+  typeset -U path # Keep unique
+  path=(
+    /usr/local/bin
+    /usr/bin
+    /bin
+    /usr/sbin
+    /sbin
+    $path
+  )
+else
+  # Bash/Portable version
+  export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin${PATH:+:$PATH}"
+fi
+
+# ---- Editor -----------------------------------------------------------------
+# Prefer vim, fall back to nano, then vi (present on virtually all POSIX systems)
+export EDITOR="${EDITOR:-$(command -v vim 2>/dev/null || command -v nano 2>/dev/null || echo vi)}"
+export VISUAL="$EDITOR"
+
+# ---- Locale -----------------------------------------------------------------
+export LANG='en_US.UTF-8'
+export LC_ALL='en_US.UTF-8'
+
+# ---- Terminal ---------------------------------------------------------------
+export TERM='xterm-256color'
+
+# ---- History ----------------------------------------------------------------
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export HISTCONTROL='ignoredups:erasedups'
+
+# ---- Colors -----------------------------------------------------------------
+export CLICOLOR=1
+export LSCOLORS='GxFxCxDxBxegedabagaced'
+
+# ---- Pager ------------------------------------------------------------------
+export PAGER='less'
+export LESS='-R --quit-if-one-screen --ignore-case'
+# Use delta for git if available
+if command -v delta >/dev/null 2>&1; then export GIT_PAGER='delta'; fi
+
+# ---- ripgrep ----------------------------------------------------------------
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
+
+# ---- fzf --------------------------------------------------------------------
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Theme: Catppuccin Mocha
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 --info=inline"
+
+# ---- Path -------------------------------------------------------------------
+{{- if eq .chezmoi.os "darwin" }}
+# Add Homebrew to PATH (macOS)
+if [[ "$(uname)" == "Darwin" ]]; then
+  if [[ "$(uname -m)" == "arm64" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
+export PATH="/usr/local/bin:$PATH"
+{{- end }}
+
+# Add Homebrew to PATH (Linux/WSL)
+if [[ "$(uname)" == "Linux" ]]; then
+  if [[ -d "/home/linuxbrew/.linuxbrew" ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  fi
+fi
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+
+# Local bin and standard homebrew paths (redundancy for emergency)
+if [[ -n "$ZSH_VERSION" ]]; then
+  path=(
+    "$HOME/.local/bin"
+    "$HOME/bin"
+    "/opt/homebrew/bin"
+    "/usr/local/bin"
+    $path
+  )
+else
+  export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+fi
+
+# ---- Local exports (not committed) ------------------------------------------
+# shellcheck source=/dev/null
+[ -f "$HOME/.local_exports" ] && source "$HOME/.local_exports"
