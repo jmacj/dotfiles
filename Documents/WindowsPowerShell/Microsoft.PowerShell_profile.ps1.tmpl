@@ -35,7 +35,7 @@ Set-Alias touch New-Item
 Set-Alias grep  Select-String
 
 # Remove built-in aliases that conflict with custom functions (Git shortcuts, ls, etc.)
-$conflictingAliases = @('gc', 'gs', 'gp', 'gl', 'gd', 'sc', 'gcb', 'ls')
+$conflictingAliases = @('gc', 'gs', 'gp', 'gl', 'gd', 'sc', 'gcb', 'ls', 'gcm')
 foreach ($a in $conflictingAliases) {
     if (Test-Path "Alias:\$a") { Remove-Item "Alias:\$a" -Force -ErrorAction SilentlyContinue }
 }
