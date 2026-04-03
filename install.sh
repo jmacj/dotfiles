@@ -78,6 +78,20 @@ install_macos_deps() {
   fi
 }
 
+# ---- Linux: install local dependencies (non-sudo) ---------------------------
+install_linux_deps() {
+  if [[ "$(uname)" != "Linux" ]]; then return; fi
+
+  local pkg_script
+  pkg_script="$(chezmoi source-path)/linux/packages.sh"
+  if [ -f "$pkg_script" ]; then
+    info "Installing Linux packages..."
+    bash "$pkg_script"
+  else
+    warn "Linux package script not found at $pkg_script"
+  fi
+}
+
 # ---- Main -------------------------------------------------------------------
 main() {
   info "Starting dotfiles bootstrap..."
@@ -100,7 +114,12 @@ main() {
 
   install_chezmoi
   apply_dotfiles
-  install_macos_deps
+  
+  case "$(uname)" in
+    Darwin) install_macos_deps ;;
+    Linux)  install_linux_deps ;;
+  esac
+
   success "Bootstrap complete! Restart your shell or run: exec \$SHELL -l"
 }
 

@@ -22,12 +22,20 @@ install:
 update:
 	chezmoi update
 
-## packages: Manually install required tools (Windows/macOS)
+## packages: Manually install required tools (Windows/macOS/Linux)
 packages:
 ifeq ($(OS),Windows_NT)
 	powershell -ExecutionPolicy Bypass -File "$(SOURCE_DIR)\windows\packages.ps1"
 else
-	brew bundle --file="$(SOURCE_DIR)/macos/Brewfile"
+	@UNAME_S=$$(uname -s); \
+	if [ "$$UNAME_S" = "Linux" ]; then \
+		bash "$(SOURCE_DIR)/linux/packages.sh"; \
+	elif [ "$$UNAME_S" = "Darwin" ]; then \
+		brew bundle --file="$(SOURCE_DIR)/macos/Brewfile"; \
+	else \
+		echo "Unsupported OS: $$UNAME_S"; \
+		exit 1; \
+	fi
 endif
 
 ## diff: Preview what would change
