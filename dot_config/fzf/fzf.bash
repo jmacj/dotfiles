@@ -5,7 +5,10 @@
 # Load fzf (installed via package manager or manually)
 if command -v fzf &>/dev/null; then
   # Key bindings: Ctrl+R (history), Ctrl+T (files), Alt+C (cd)
-  if [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
+  if [ -f "$HOME/.fzf/shell/key-bindings.bash" ]; then
+    source "$HOME/.fzf/shell/key-bindings.bash"
+    source "$HOME/.fzf/shell/completion.bash"
+  elif [ -f /usr/share/doc/fzf/examples/key-bindings.bash ]; then
     source /usr/share/doc/fzf/examples/key-bindings.bash
   elif [ -f /usr/share/fzf/key-bindings.bash ]; then
     source /usr/share/fzf/key-bindings.bash

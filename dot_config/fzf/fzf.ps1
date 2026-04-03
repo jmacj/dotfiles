@@ -8,10 +8,12 @@ if (Get-Command fzf -ErrorAction SilentlyContinue) {
     Import-Module PSFzf -ErrorAction SilentlyContinue
 
     if (Get-Module PSFzf) {
-        # Override Ctrl+T (file search) and Ctrl+R (history search)
+        # Enable default key bindings:
+        # Ctrl+T (file search), Ctrl+R (history search), Alt+C (cd)
         Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+        Set-PSReadLineKeyHandler -Chord 'Alt+c' -ScriptBlock { Invoke-FzfDirectorySearch }
 
-        # Alt+C: cd into selected directory
-        Set-PSReadLineKeyHandler -Chord 'Alt+c' -ScriptBlock { Invoke-FzfTabCompletion }
+        # Enable Fuzzy Tab Completion
+        Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
     }
 }

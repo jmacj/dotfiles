@@ -70,7 +70,21 @@ if ($failed.Count -gt 0) {
     Write-Warning "The following packages failed to install:"
     $failed | ForEach-Object { Write-Warning "  - $_" }
 } else {
-    Write-Host "All packages installed successfully." -ForegroundColor Green
+    Write-Host "All Winget packages installed successfully." -ForegroundColor Green
+}
+
+# Install PSFzf module for PowerShell fzf integration
+Write-Host ""
+if (-not (Get-Module -ListAvailable PSFzf)) {
+    Write-Host "Installing PSFzf module..." -ForegroundColor Cyan
+    Install-Module -Name PSFzf -Scope CurrentUser -Force -SkipPublisherCheck -ErrorAction SilentlyContinue
+    if ($LASTEXITCODE -eq 0 -or (Get-Module -ListAvailable PSFzf)) {
+        Write-Host "  PSFzf installed." -ForegroundColor Green
+    } else {
+        Write-Warning "Failed to install PSFzf module. You may need to run: Install-Module PSFzf"
+    }
+} else {
+    Write-Host "PSFzf module is already installed." -ForegroundColor Green
 }
 
 Write-Host "Restart your terminal to pick up PATH changes." -ForegroundColor Yellow
