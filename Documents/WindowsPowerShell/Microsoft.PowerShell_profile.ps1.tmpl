@@ -79,6 +79,37 @@ function gstp { git stash pop $args }
 function gbr { git branch $args }
 function gundo { git reset --soft HEAD~1 }
 
+# cpr - create a git worktree for a pull request
+# Usage: cpr <PR_NUMBER> [<REMOTE>]
+# Example: cpr 1234 origin
+function cpr {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$PRNumber,
+        [string]$Remote = "origin"
+    )
+    $repo = (Get-Item (git rev-parse --show-toplevel)).Name
+    $branch = gh pr view $PRNumber --json headRefName -q .headRefName
+    if (-not $branch) {
+        Write-Error "Could not find branch for PR #$PRNumber"
+        return
+    }
+    $wtPath = "$HOME/worktrees/$repo/$branch"
+    $parent = Split-Path $wtPath -Parent
+    if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+
+    git fetch $Remote $branch
+    git worktree add $wtPath $branch
+    Set-Location $wtPath
+    Write-Host "Switched to new worktree for PR #$PRNumber: $branch"
+}
+
+# cdwt - interactive navigation to worktrees
+function cdwt {
+    $wt = Get-ChildItem -Path "$HOME/worktrees/*/*" -Directory | Select-Object -ExpandProperty FullName | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border
+    if ($wt) { Set-Location $wt }
+}
+
 # ---- Utilities --------------------------------------------------------------
 function mkcd {
     param([string]$Path)

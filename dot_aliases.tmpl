@@ -54,6 +54,35 @@ alias gstp='git stash pop'
 alias gbr='git branch'
 alias gundo='git reset --soft HEAD~1'
 
+# cpr - create a git worktree for a pull request
+# Usage: cpr <PR_NUMBER> [<REMOTE>]
+# Example: cpr 1234 origin
+# If no remote is specified, it defaults to 'origin'.
+# Note: This command fetches the branch associated with the PR and creates a worktree in the current directory.
+# The worktree will be named after the branch.
+# Ensure you have the GitHub CLI installed and authenticated with `gh auth login`.
+cpr() {
+  pr="$1"
+  remote="${2:-origin}"
+  repo=$(basename "$(git rev-parse --show-toplevel)")
+  branch=$(gh pr view "$pr" --json headRefName -q .headRefName)
+  wtpath="$HOME/worktrees/$repo/$branch"
+
+  mkdir -p "$(dirname "$wtpath")"
+  git fetch "$remote" "$branch"
+  git worktree add "$wtpath" "$branch"
+  cd "$wtpath" || return
+  echo "Switched to new worktree for PR #$pr: $branch"
+}
+
+# cdwt - interactive navigation to worktrees
+cdwt() {
+  local wt=$(find "$HOME/worktrees" -mindepth 2 -maxdepth 2 -type d 2>/dev/null | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border)
+  if [ -n "$wt" ]; then
+    cd "$wt"
+  fi
+}
+
 # ---- Sudo (allow alias expansion) -------------------------------------------
 alias sudo='sudo '
 
