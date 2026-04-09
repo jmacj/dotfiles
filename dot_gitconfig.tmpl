@@ -89,7 +89,7 @@
     alias     = config --get-regexp ^alias\\.
     whoami    = !git config user.name && git config user.email
     cleanup   = !f() { b=$(git branch --merged | grep -Ev '^[[:space:]]*[*+]|(main|master|develop)'); [ -n "$b" ] && echo "$b" | xargs git branch -d; }; f
-    wta       = "!f() { branch=\"$1\"; repo=$(basename \"$(git rev-parse --show-toplevel)\"); wtpath=\"$HOME/worktrees/$repo/$branch\"; mkdir -p \"$(dirname \"$wtpath\")\"; git worktree add -b \"$branch\" \"$wtpath\"; }; f"
+    wta       = "!f() { branch=\"$1\"; root=$(git rev-parse --show-toplevel); repo=$(basename \"$root\"); wtpath=\"$HOME/worktrees/$repo/$branch\"; mkdir -p \"$(dirname \"$wtpath\")\"; if ! git worktree add \"$wtpath\" \"$branch\" 2>/dev/null; then git worktree add -b \"$branch\" \"$wtpath\"; fi; [ -f \"$root/.env\" ] && cp \"$root/.env\" \"$wtpath/.env\"; }; f"
     wtr       = "!f() { branch=\"$1\"; repo=$(basename \"$(git rev-parse --show-toplevel)\"); wtpath=\"$HOME/worktrees/$repo/$branch\"; git worktree remove \"$wtpath\"; }; f"
     wtl       = "!f() { git worktree list; }; f"
 

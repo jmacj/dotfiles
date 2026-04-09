@@ -88,7 +88,8 @@ function cpr {
         [string]$PRNumber,
         [string]$Remote = "origin"
     )
-    $repo = (Get-Item (git rev-parse --show-toplevel)).Name
+    $root = git rev-parse --show-toplevel
+    $repo = (Get-Item $root).Name
     $branch = gh pr view $PRNumber --json headRefName -q .headRefName
     if (-not $branch) {
         Write-Error "Could not find branch for PR #$PRNumber"
@@ -100,8 +101,14 @@ function cpr {
 
     git fetch $Remote $branch
     git worktree add $wtPath $branch
+    
+    # Copy .env if it exists
+    if (Test-Path "$root\.env") {
+        Copy-Item "$root\.env" "$wtPath\.env" -Force
+    }
+
     Set-Location $wtPath
-    Write-Host "Switched to new worktree for PR #$PRNumber: $branch"
+    Write-Host "Switched to new worktree for PR #${PRNumber}: $branch"
 }
 
 # cdwt - interactive navigation to worktrees
