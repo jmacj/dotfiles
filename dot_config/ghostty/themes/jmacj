@@ -1,0 +1,55 @@
+# ==========================================
+# JMACJ Theme (Strict Branding)
+# ==========================================
+# Description: Strictly follows the grayscale-first Zinc design system.
+# Accent: Blue-500 (#3b82f6) used sparingly as the singular non-gray color.
+
+# Core Backgrounds & Foregrounds
+# Page background (zinc-950)
+background = #09090b
+# Primary body copy (zinc-400)
+foreground = #a1a1aa
+
+# Cursor
+# Emphasis (zinc-100)
+cursor-color = #f4f4f5
+# background (zinc-950)
+cursor-text = #09090b
+
+# Selection
+# Hover states / borders (zinc-800)
+selection-background = #27272a
+# Emphasis (zinc-100)
+selection-foreground = #f4f4f5
+
+# Normal ANSI Palette (0-7)
+# palette 0 = black (zinc-950)
+palette = 0=#09090b
+# palette 1 = red (zinc-500 muted)
+palette = 1=#71717a
+# palette 2 = green (zinc-400 normal)
+palette = 2=#a1a1aa
+# palette 3 = yellow (zinc-100 emphasis)
+palette = 3=#f4f4f5
+# palette 4 = blue (blue-500 accent)
+palette = 4=#3b82f6
+# palette 5 = magenta (zinc-500 muted)
+palette = 5=#71717a
+# palette 6 = cyan (zinc-400 normal)
+palette = 6=#a1a1aa
+# palette 7 = white (zinc-400 normal)
+palette = 7=#a1a1aa
+
+# Bright ANSI Palette (8-15)
+# palette 8 = bright black (zinc-600)
+palette = 8=#52525b
+# palette 9-14 use zinc-100 for maximum emphasis across categories
+palette = 9=#f4f4f5
+palette = 10=#f4f4f5
+palette = 11=#f4f4f5
+# Exceptional use of accent color for bright blue
+palette = 12=#3b82f6
+palette = 13=#f4f4f5
+palette = 14=#f4f4f5
+# palette 15 = bright white (zinc-100)
+palette = 15=#f4f4f5

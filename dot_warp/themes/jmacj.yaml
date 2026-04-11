@@ -1,0 +1,28 @@
+# Warp Theme: jmacj
+# Strictly follows the grayscale-first Zinc design system.
+# Accent: Blue-500 (#3b82f6)
+
+name: "jmacj"
+accent: "#3b82f6"
+background: "#09090b"
+foreground: "#a1a1aa"
+details: "dark"
+terminal_colors:
+  normal:
+    black: "#09090b"
+    red: "#71717a"
+    green: "#a1a1aa"
+    yellow: "#f4f4f5"
+    blue: "#3b82f6"
+    magenta: "#71717a"
+    cyan: "#a1a1aa"
+    white: "#a1a1aa"
+  bright:
+    black: "#52525b"
+    red: "#f4f4f5"
+    green: "#f4f4f5"
+    yellow: "#f4f4f5"
+    blue: "#3b82f6"
+    magenta: "#f4f4f5"
+    cyan: "#f4f4f5"
+    white: "#f4f4f5"

@@ -1,0 +1,53 @@
+# ==========================================
+# Neo Theme (Zinc Cohesive)
+# ==========================================
+
+# Core Backgrounds & Foregrounds
+# Background: zinc-950
+background = #09090b
+# Foreground: zinc-400
+foreground = #a1a1aa
+
+# Cursor
+cursor-color = #f4f4f5
+cursor-text = #09090b
+
+# Selection
+selection-background = #27272a
+selection-foreground = #f4f4f5
+
+# Normal ANSI Palette (0-7)
+# palette 0 = black (zinc-950)
+palette = 0=#09090b
+# palette 1 = red (rose-600)
+palette = 1=#e11d48
+# palette 2 = green (emerald-600)
+palette = 2=#059669
+# palette 3 = yellow (amber-600)
+palette = 3=#d97706
+# palette 4 = blue (sky-600)
+palette = 4=#0284c7
+# palette 5 = magenta (violet-600)
+palette = 5=#7c3aed
+# palette 6 = cyan (teal-600)
+palette = 6=#0d9488
+# palette 7 = white (zinc-400)
+palette = 7=#a1a1aa
+
+# Bright ANSI Palette (8-15)
+# palette 8 = bright black (zinc-600)
+palette = 8=#52525b
+# palette 9 = bright red (rose-400)
+palette = 9=#fb7185
+# palette 10 = bright green (emerald-400)
+palette = 10=#34d399
+# palette 11 = bright yellow (amber-400)
+palette = 11=#fbbf24
+# palette 12 = bright blue (sky-400)
+palette = 12=#38bdf8
+# palette 13 = bright magenta (violet-400)
+palette = 13=#a78bfa
+# palette 14 = bright cyan (teal-400)
+palette = 14=#2dd4bf
+# palette 15 = bright white (zinc-100)
+palette = 15=#f4f4f5

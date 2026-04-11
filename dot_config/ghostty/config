@@ -1,0 +1,12 @@
+# Apply the custom theme
+theme = jetbrains
+
+# UI Aesthetics
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+window-padding-x = 16
+window-padding-y = 16
+
+# Ghostty inherently uses native OS keybindings (Cmd on Mac, Ctrl+Shift on Windows/Linux) 
+# and a clean, buttonless UI by default, so you don't need to manually configure 
+# pane splitting or tab bar visibility like you did in WezTerm!
