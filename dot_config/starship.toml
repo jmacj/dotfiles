@@ -8,14 +8,34 @@
 palette = "jetbrains"
 
 [palettes.jetbrains]
-jb_blue   = "#3592C4"
-jb_green  = "#629755"
-jb_orange = "#ED9439"
-jb_purple = "#9D77BD"
-jb_yellow = "#FFC66D"
-jb_red    = "#FF6B68"
-jb_grey   = "#6B6B6B"
-jb_white  = "#A9B7C6"
+blue   = "#3592C4"
+green  = "#629755"
+orange = "#ED9439"
+purple = "#9D77BD"
+yellow = "#FFC66D"
+red    = "#FF6B68"
+grey   = "#6B6B6B"
+white  = "#A9B7C6"
+
+[palettes.neo]
+blue   = "#0284c7"
+green  = "#059669"
+orange = "#d97706"
+purple = "#7c3aed"
+yellow = "#d97706"
+red    = "#e11d48"
+grey   = "#52525b"
+white  = "#f4f4f5"
+
+[palettes.jmacj]
+blue   = "#3b82f6"
+green  = "#a1a1aa"
+orange = "#f4f4f5"
+purple = "#71717a"
+yellow = "#f4f4f5"
+red    = "#71717a"
+grey   = "#52525b"
+white  = "#f4f4f5"
 
 format = """
 $username\
@@ -24,6 +44,7 @@ $directory\
 $git_branch\
 $git_state\
 $git_status\
+$package\
 $cmd_duration\
 $line_break\
 $python\
@@ -33,18 +54,18 @@ $character"""
 
 # ---- Directory --------------------------------------------------------------
 [directory]
-style             = "bold jb_blue"
+style             = "bold blue"
 truncation_length = 4
 truncate_to_repo  = true
 
 # ---- Git --------------------------------------------------------------------
 [git_branch]
 symbol = " "
-style  = "bold jb_purple"
+style  = "bold purple"
 
 [git_status]
 format     = '([\[$all_status$ahead_behind\]]($style) )'
-style      = "bold jb_red"
+style      = "bold red"
 conflicted = "⚠"
 ahead      = "⇡${count}"
 behind     = "⇣${count}"
@@ -57,31 +78,35 @@ renamed    = "»"
 deleted    = "✘"
 
 # ---- Languages --------------------------------------------------------------
+[package]
+symbol = "󰏗 "
+style  = "bold orange"
+
 [nodejs]
 symbol = " "
-style  = "bold jb_green"
+style  = "bold green"
 detect_files = ["package.json", ".node-version", "nvmrc", "package-lock.json", "npm-shrinkwrap.json", "yarn.lock", "pnpm-lock.yaml", "pnpm-workspace.yaml"]
 
 [php]
 symbol = " "
-style  = "bold jb_blue"
+style  = "bold blue"
 detect_files = ["composer.json", ".php-version", "index.php"]
 detect_extensions = ["php"]
 
 [python]
 symbol = " "
-style  = "bold jb_yellow"
+style  = "bold yellow"
 
 # ---- Command duration -------------------------------------------------------
 [cmd_duration]
 min_time = 2000
 format   = " [$duration]($style) "
-style    = "bold jb_yellow"
+style    = "bold yellow"
 
 # ---- Prompt character -------------------------------------------------------
 [character]
-success_symbol = "[❯](bold jb_green)"
-error_symbol   = "[❯](bold jb_red)"
+success_symbol = "[❯](bold green)"
+error_symbol   = "[❯](bold red)"
 
 # ---- Username (show only in SSH) --------------------------------------------
 [username]

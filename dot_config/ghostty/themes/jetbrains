@@ -1,0 +1,47 @@
+# ==========================================
+# JetBrains Theme (Starship Sync)
+# ==========================================
+# Colors sourced from Starship "jetbrains" palette.
+
+# Core Backgrounds & Foregrounds
+background = #09090b
+foreground = #a1a1aa
+
+# Cursor
+cursor-color = #f4f4f5
+cursor-text = #09090b
+
+# Selection
+selection-background = #27272a
+selection-foreground = #f4f4f5
+
+# Normal ANSI Palette (0-7)
+# palette 0 = black (zinc-950)
+palette = 0=#09090b
+# palette 1 = red (jb_red)
+palette = 1=#FF6B68
+# palette 2 = green (jb_green)
+palette = 2=#629755
+# palette 3 = yellow (jb_yellow)
+palette = 3=#FFC66D
+# palette 4 = blue (jb_blue)
+palette = 4=#3592C4
+# palette 5 = magenta (jb_purple)
+palette = 5=#9D77BD
+# palette 6 = cyan (jb_blue variant / matching starship)
+palette = 6=#3592C4
+# palette 7 = white (jb_white)
+palette = 7=#A9B7C6
+
+# Bright ANSI Palette (8-15)
+# palette 8 = bright black (jb_grey)
+palette = 8=#6B6B6B
+# Bright variants for JetBrains are often the same or slightly adjusted
+palette = 9=#FF6B68
+palette = 10=#629755
+palette = 11=#FFC66D
+palette = 12=#3592C4
+palette = 13=#9D77BD
+palette = 14=#3592C4
+# palette 15 = bright white (zinc-100)
+palette = 15=#f4f4f5
