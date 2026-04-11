@@ -93,6 +93,10 @@ else
   export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 fi
 
+# ---- Code root --------------------------------------------------------------
+# Root for all project repos and worktrees. Override per machine in ~/.local_bashrc or ~/.local_zshrc.
+export CODE_ROOT="${CODE_ROOT:-$HOME/code}"
+
 # ---- Local exports (not committed) ------------------------------------------
 # shellcheck source=/dev/null
 [ -f "$HOME/.local_exports" ] && source "$HOME/.local_exports"

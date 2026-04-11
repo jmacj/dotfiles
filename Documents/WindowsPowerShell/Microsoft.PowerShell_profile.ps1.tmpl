@@ -43,6 +43,9 @@ foreach ($a in $conflictingAliases) {
     if (Test-Path "Alias:\$a") { Remove-Item "Alias:\$a" -Force -ErrorAction SilentlyContinue }
 }
 
+# Root for all project repos and worktrees. Override per machine before this profile loads.
+if (-not $ENV:CODE_ROOT) { $ENV:CODE_ROOT = "$HOME\code" }
+
 # Navigation
 function ..   { Set-Location .. }
 function ...  { Set-Location ..\.. }
@@ -82,42 +85,110 @@ function gstp { git stash pop $args }
 function gbr { git branch $args }
 function gundo { git reset --soft HEAD~1 }
 
-# cpr - create a git worktree for a pull request
-# Usage: cpr <PR_NUMBER> [<REMOTE>]
-# Example: cpr 1234 origin
+# =============================================================================
+# Worktree lifecycle
+# Convention: main worktrees at    $ENV:CODE_ROOT\<repo>\
+#             feature worktrees at $ENV:CODE_ROOT\<repo>.worktrees\<branch>\
+# =============================================================================
+
+function wta {
+    param(
+        [Parameter(Mandatory=$true)][string]$Branch,
+        [string]$Base = "main"
+    )
+    $root = git rev-parse --show-toplevel
+    $repo = (Get-Item $root).Name
+    $wtPath = "$ENV:CODE_ROOT\$repo.worktrees\$Branch"
+    $parent = Split-Path $wtPath -Parent
+    if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+
+    $branchExists = git show-ref --verify --quiet "refs/heads/$Branch" 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        git worktree add $wtPath $Branch
+    } else {
+        Write-Host "Branch '$Branch' not found locally — creating from '$Base'"
+        git worktree add -b $Branch $wtPath $Base
+    }
+
+    if ($LASTEXITCODE -ne 0) { return }
+    if (Test-Path "$root\.env") { Copy-Item "$root\.env" "$wtPath\.env" -Force; Write-Host "✓ .env copied" }
+    Set-Location $wtPath
+    Write-Host "✓ Worktree ready: $wtPath"
+}
+
 function cpr {
     param(
-        [Parameter(Mandatory=$true)]
-        [string]$PRNumber,
+        [Parameter(Mandatory=$true)][string]$PRNumber,
         [string]$Remote = "origin"
     )
     $root = git rev-parse --show-toplevel
     $repo = (Get-Item $root).Name
     $branch = gh pr view $PRNumber --json headRefName -q .headRefName
-    if (-not $branch) {
-        Write-Error "Could not find branch for PR #$PRNumber"
-        return
-    }
-    $wtPath = "$HOME/worktrees/$repo/$branch"
+    if (-not $branch) { Write-Error "✗ PR #$PRNumber not found"; return }
+    $wtPath = "$ENV:CODE_ROOT\$repo.worktrees\$branch"
     $parent = Split-Path $wtPath -Parent
     if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
 
     git fetch $Remote $branch
     git worktree add $wtPath $branch
-    
-    # Copy .env if it exists
-    if (Test-Path "$root\.env") {
-        Copy-Item "$root\.env" "$wtPath\.env" -Force
-    }
+    if ($LASTEXITCODE -ne 0) { return }
 
+    if (Test-Path "$root\.env") { Copy-Item "$root\.env" "$wtPath\.env" -Force; Write-Host "✓ .env copied" }
     Set-Location $wtPath
-    Write-Host "Switched to new worktree for PR #${PRNumber}: $branch"
+    Write-Host "✓ PR #${PRNumber} ready: $branch"
 }
 
-# cdwt - interactive navigation to worktrees
+function wtr {
+    param([string]$Branch = "")
+    $root = (git worktree list --porcelain | Select-String "^worktree " | Select-Object -First 1) -replace "worktree ", ""
+    $repo = (Get-Item $root.Trim()).Name
+
+    if (-not $Branch) {
+        $Branch = git worktree list --porcelain `
+            | Select-String "^worktree " `
+            | ForEach-Object { ($_ -replace "worktree ", "").Trim() } `
+            | Where-Object { $_ -like "$ENV:CODE_ROOT\$repo.worktrees\*" } `
+            | ForEach-Object { $_ -replace [regex]::Escape("$ENV:CODE_ROOT\$repo.worktrees\"), "" } `
+            | fzf --prompt="Remove Worktree > " --height=~40% --layout=reverse --border
+    }
+
+    if (-not $Branch) { return }
+    $wtPath = "$ENV:CODE_ROOT\$repo.worktrees\$Branch"
+
+    if ($PWD.Path -like "$wtPath*") { Set-Location $root.Trim() }
+
+    git worktree remove $wtPath --force
+    git branch -d $Branch 2>$null
+    git worktree prune
+    Write-Host "✓ Removed and pruned: $Branch"
+}
+
+function wtls {
+    git worktree list
+}
+
 function cdwt {
-    $wt = Get-ChildItem -Path "$HOME/worktrees/*/*" -Directory | Select-Object -ExpandProperty FullName | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border
+    $wt = git worktree list --porcelain `
+        | Select-String "^worktree " `
+        | ForEach-Object { ($_ -replace "worktree ", "").Trim() } `
+        | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border
     if ($wt) { Set-Location $wt }
+}
+
+function wtdone {
+    $root = (git worktree list --porcelain | Select-String "^worktree " | Select-Object -First 1) -replace "worktree ", ""
+    $branch = git rev-parse --abbrev-ref HEAD
+
+    if ($branch -eq "main" -or $branch -eq "master") {
+        Write-Error "✗ You're on main/master — run this from inside a feature worktree"
+        return
+    }
+
+    Set-Location $root.Trim()
+    git worktree remove "$ENV:CODE_ROOT\$(Split-Path $root.Trim() -Leaf).worktrees\$branch" --force
+    git branch -d $branch 2>$null
+    git worktree prune
+    Write-Host "✓ Done with '$branch', back at $(Split-Path $root.Trim() -Leaf) root"
 }
 
 # ---- Utilities --------------------------------------------------------------
