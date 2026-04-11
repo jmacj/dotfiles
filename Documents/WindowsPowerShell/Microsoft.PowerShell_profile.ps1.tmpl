@@ -97,7 +97,8 @@ function wta {
         [string]$Base = "main"
     )
     $root = git rev-parse --show-toplevel
-    $root = $root -replace '^/([a-z])/', '$1:/' -replace '/', '\'
+    $root = $root -replace '^/([a-z])/', '$1`:/'
+    $root = $root -replace '/', '\'
     $rel = $root -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
     $wtPath = "$ENV:CODE_ROOT\$rel.worktrees\$Branch"
     $parent = Split-Path $wtPath -Parent
@@ -130,7 +131,8 @@ function cpr {
         [string]$Remote = "origin"
     )
     $root = git rev-parse --show-toplevel
-    $root = $root -replace '^/([a-z])/', '$1:/' -replace '/', '\'
+    $root = $root -replace '^/([a-z])/', '$1`:/'
+    $root = $root -replace '/', '\'
     $rel = $root -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
     $branch = gh pr view $PRNumber --json headRefName -q .headRefName
     if (-not $branch) { Write-Error "✗ PR #$PRNumber not found"; return }
@@ -151,7 +153,8 @@ function wtr {
     param([string]$Branch = "")
     $root = (git worktree list --porcelain | Select-String "^worktree " | Select-Object -First 1) -replace "worktree ", ""
     $root = $root.Trim()
-    $root = $root -replace '^/([a-z])/', '$1:/' -replace '/', '\'
+    $root = $root -replace '^/([a-z])/', '$1`:/'
+    $root = $root -replace '/', '\'
     $rel = $root.Trim() -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
 
     if (-not $Branch) {
@@ -189,7 +192,8 @@ function cdwt {
 function wtdone {
     $root = (git worktree list --porcelain | Select-String "^worktree " | Select-Object -First 1) -replace "worktree ", ""
     $root = $root.Trim()
-    $root = $root -replace '^/([a-z])/', '$1:/' -replace '/', '\'
+    $root = $root -replace '^/([a-z])/', '$1`:/'
+    $root = $root -replace '/', '\'
     $branch = git rev-parse --abbrev-ref HEAD
 
     if ($branch -eq "main" -or $branch -eq "master") {
