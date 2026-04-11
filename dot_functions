@@ -153,8 +153,12 @@ wta() {
 
   if git show-ref --verify --quiet "refs/heads/$branch"; then
     git worktree add "$wtpath_g" "$branch"
+  elif git ls-remote --exit-code --heads origin "$branch" &>/dev/null; then
+    echo "Branch '$branch' found on remote — fetching"
+    git fetch origin "$branch"
+    git worktree add "$wtpath_g" --track -b "$branch" "origin/$branch"
   else
-    echo "Branch '$branch' not found locally — creating from '$base'"
+    echo "Branch '$branch' not found locally or remotely — creating from '$base'"
     git worktree add -b "$branch" "$wtpath_g" "$base"
   fi || return 1
 
