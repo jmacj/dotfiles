@@ -97,8 +97,8 @@ function wta {
         [string]$Base = "main"
     )
     $root = git rev-parse --show-toplevel
-    $repo = (Get-Item $root).Name
-    $wtPath = "$ENV:CODE_ROOT\$repo.worktrees\$Branch"
+    $rel = $root -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
+    $wtPath = "$ENV:CODE_ROOT\$rel.worktrees\$Branch"
     $parent = Split-Path $wtPath -Parent
     if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
 
@@ -122,10 +122,10 @@ function cpr {
         [string]$Remote = "origin"
     )
     $root = git rev-parse --show-toplevel
-    $repo = (Get-Item $root).Name
+    $rel = $root -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
     $branch = gh pr view $PRNumber --json headRefName -q .headRefName
     if (-not $branch) { Write-Error "✗ PR #$PRNumber not found"; return }
-    $wtPath = "$ENV:CODE_ROOT\$repo.worktrees\$branch"
+    $wtPath = "$ENV:CODE_ROOT\$rel.worktrees\$branch"
     $parent = Split-Path $wtPath -Parent
     if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
 
@@ -141,19 +141,19 @@ function cpr {
 function wtr {
     param([string]$Branch = "")
     $root = (git worktree list --porcelain | Select-String "^worktree " | Select-Object -First 1) -replace "worktree ", ""
-    $repo = (Get-Item $root.Trim()).Name
+    $rel = $root.Trim() -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
 
     if (-not $Branch) {
         $Branch = git worktree list --porcelain `
             | Select-String "^worktree " `
             | ForEach-Object { ($_ -replace "worktree ", "").Trim() } `
-            | Where-Object { $_ -like "$ENV:CODE_ROOT\$repo.worktrees\*" } `
-            | ForEach-Object { $_ -replace [regex]::Escape("$ENV:CODE_ROOT\$repo.worktrees\"), "" } `
+            | Where-Object { $_ -like "$ENV:CODE_ROOT\$rel.worktrees\*" } `
+            | ForEach-Object { $_ -replace [regex]::Escape("$ENV:CODE_ROOT\$rel.worktrees\"), "" } `
             | fzf --prompt="Remove Worktree > " --height=~40% --layout=reverse --border
     }
 
     if (-not $Branch) { return }
-    $wtPath = "$ENV:CODE_ROOT\$repo.worktrees\$Branch"
+    $wtPath = "$ENV:CODE_ROOT\$rel.worktrees\$Branch"
 
     if ($PWD.Path -like "$wtPath*") { Set-Location $root.Trim() }
 
@@ -184,11 +184,12 @@ function wtdone {
         return
     }
 
+    $rel = $root.Trim() -replace [regex]::Escape("$ENV:CODE_ROOT\"), ""
     Set-Location $root.Trim()
-    git worktree remove "$ENV:CODE_ROOT\$(Split-Path $root.Trim() -Leaf).worktrees\$branch" --force
+    git worktree remove "$ENV:CODE_ROOT\$rel.worktrees\$branch" --force
     git branch -d $branch 2>$null
     git worktree prune
-    Write-Host "✓ Done with '$branch', back at $(Split-Path $root.Trim() -Leaf) root"
+    Write-Host "✓ Done with '$branch', back at $rel root"
 }
 
 # ---- Utilities --------------------------------------------------------------

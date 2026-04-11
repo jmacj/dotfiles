@@ -119,8 +119,8 @@ wta() {
   local branch="${1:?Usage: wta <branch> [base]}"
   local base="${2:-main}"
   local root; root=$(git rev-parse --show-toplevel) || return 1
-  local repo; repo=$(basename "$root")
-  local wtpath="$CODE_ROOT/$repo.worktrees/$branch"
+  local rel="${root#$CODE_ROOT/}"
+  local wtpath="$CODE_ROOT/$rel.worktrees/$branch"
 
   mkdir -p "$(dirname "$wtpath")"
 
@@ -141,10 +141,10 @@ cpr() {
   local pr="${1:?Usage: cpr <PR_NUMBER> [remote]}"
   local remote="${2:-origin}"
   local root; root=$(git rev-parse --show-toplevel) || return 1
-  local repo; repo=$(basename "$root")
+  local rel="${root#$CODE_ROOT/}"
   local branch; branch=$(gh pr view "$pr" --json headRefName -q .headRefName) || return 1
   [ -z "$branch" ] && { echo "✗ PR #$pr not found"; return 1; }
-  local wtpath="$CODE_ROOT/$repo.worktrees/$branch"
+  local wtpath="$CODE_ROOT/$rel.worktrees/$branch"
 
   mkdir -p "$(dirname "$wtpath")"
   git fetch "$remote" "$branch"
@@ -159,19 +159,19 @@ cpr() {
 # Steps out to repo root first if currently inside the worktree being removed.
 wtr() {
   local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
-  local repo; repo=$(basename "$root")
+  local rel="${root#$CODE_ROOT/}"
   local branch="${1:-}"
 
   if [ -z "$branch" ]; then
     branch=$(git worktree list --porcelain \
       | awk '/^worktree /{print $2}' \
-      | grep "$CODE_ROOT/$repo.worktrees/" \
-      | sed "s|$CODE_ROOT/$repo.worktrees/||" \
+      | grep "$CODE_ROOT/$rel.worktrees/" \
+      | sed "s|$CODE_ROOT/$rel.worktrees/||" \
       | fzf --prompt="Remove Worktree > " --height=~40% --layout=reverse --border)
   fi
 
   [ -z "$branch" ] && return 0
-  local wtpath="$CODE_ROOT/$repo.worktrees/$branch"
+  local wtpath="$CODE_ROOT/$rel.worktrees/$branch"
 
   case "$PWD" in
     "$wtpath"*) cd "$root" ;;
@@ -212,9 +212,10 @@ wtdone() {
     main|master) echo "✗ You're on main/master — run this from inside a feature worktree"; return 1 ;;
   esac
 
+  local rel="${root#$CODE_ROOT/}"
   cd "$root" || return 1
-  git worktree remove "$CODE_ROOT/$(basename "$root").worktrees/$branch" --force \
+  git worktree remove "$CODE_ROOT/$rel.worktrees/$branch" --force \
     && git branch -d "$branch" 2>/dev/null; true \
     && git worktree prune \
-    && echo "✓ Done with '$branch', back at $(basename "$root") root"
+    && echo "✓ Done with '$branch', back at $rel root"
 }
