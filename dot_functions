@@ -123,6 +123,19 @@ _code_root_posix() {
   fi
 }
 
+# _to_git_path: convert a POSIX path to native format for git.exe arguments.
+# On Git-Bash/MSYS2, git.exe is a Windows binary — MSYS2 mangles POSIX paths
+# (/c/Users/...) into garbage when auto-converting them. cygpath -w produces
+# a clean Windows path (C:\Users\...) that git.exe handles correctly.
+# On native POSIX systems this is a no-op pass-through.
+_to_git_path() {
+  if command -v cygpath >/dev/null 2>&1; then
+    cygpath -w "$1"
+  else
+    printf '%s' "$1"
+  fi
+}
+
 # wta <branch> [base]
 # Add a worktree for <branch>. Creates branch from [base] (default: main) if it
 # doesn't exist locally. Always cd into the new worktree after creation.
@@ -133,14 +146,15 @@ wta() {
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local wtpath="$code_root/$rel.worktrees/$branch"
+  local wtpath_g; wtpath_g=$(_to_git_path "$wtpath")
 
   mkdir -p "$(dirname "$wtpath")"
 
   if git show-ref --verify --quiet "refs/heads/$branch"; then
-    git worktree add "$wtpath" "$branch"
+    git worktree add "$wtpath_g" "$branch"
   else
     echo "Branch '$branch' not found locally — creating from '$base'"
-    git worktree add -b "$branch" "$wtpath" "$base"
+    git worktree add -b "$branch" "$wtpath_g" "$base"
   fi || return 1
 
   [ -f "$root/.env" ] && cp "$root/.env" "$wtpath/.env" && echo "✓ .env copied"
@@ -158,10 +172,11 @@ cpr() {
   local branch; branch=$(gh pr view "$pr" --json headRefName -q .headRefName) || return 1
   [ -z "$branch" ] && { echo "✗ PR #$pr not found"; return 1; }
   local wtpath="$code_root/$rel.worktrees/$branch"
+  local wtpath_g; wtpath_g=$(_to_git_path "$wtpath")
 
   mkdir -p "$(dirname "$wtpath")"
   git fetch "$remote" "$branch"
-  git worktree add "$wtpath" "$branch" || return 1
+  git worktree add "$wtpath_g" "$branch" || return 1
 
   [ -f "$root/.env" ] && cp "$root/.env" "$wtpath/.env" && echo "✓ .env copied"
   cd "$wtpath" && echo "✓ PR #$pr ready: $branch"
@@ -186,12 +201,13 @@ wtr() {
 
   [ -z "$branch" ] && return 0
   local wtpath="$code_root/$rel.worktrees/$branch"
+  local wtpath_g; wtpath_g=$(_to_git_path "$wtpath")
 
   case "$PWD" in
     "$wtpath"*) cd "$root" ;;
   esac
 
-  git worktree remove "$wtpath" --force \
+  git worktree remove "$wtpath_g" --force \
     && git branch -d "$branch" 2>/dev/null \
     && git worktree prune \
     && echo "✓ Removed and pruned: $branch"
@@ -228,8 +244,9 @@ wtdone() {
 
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
+  local wtpath_g; wtpath_g=$(_to_git_path "$code_root/$rel.worktrees/$branch")
   cd "$root" || return 1
-  git worktree remove "$code_root/$rel.worktrees/$branch" --force \
+  git worktree remove "$wtpath_g" --force \
     && git branch -d "$branch" 2>/dev/null; true \
     && git worktree prune \
     && echo "✓ Done with '$branch', back at $rel root"
