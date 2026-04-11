@@ -52,6 +52,8 @@ done
 bindkey -e                    # emacs key bindings
 bindkey '^[[A' history-search-backward  # up arrow
 bindkey '^[[B' history-search-forward   # down arrow
+bindkey '^I' menu-expand-or-complete    # Tab: open navigable menu
+bindkey '^[[Z' reverse-menu-complete    # Shift+Tab: go backward
 
 {{- if eq .chezmoi.os "darwin" }}
 # ---- Homebrew completions ---------------------------------------------------

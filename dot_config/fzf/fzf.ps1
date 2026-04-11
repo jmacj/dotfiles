@@ -12,8 +12,5 @@ if (Get-Command fzf -ErrorAction SilentlyContinue) {
         # Ctrl+T (file search), Ctrl+R (history search), Alt+C (cd)
         Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
         Set-PSReadLineKeyHandler -Chord 'Alt+c' -ScriptBlock { Invoke-FzfDirectorySearch }
-
-        # Enable Fuzzy Tab Completion
-        Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
     }
 }

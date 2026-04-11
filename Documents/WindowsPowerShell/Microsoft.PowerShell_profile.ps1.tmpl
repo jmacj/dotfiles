@@ -27,6 +27,9 @@ if (Get-Module -ListAvailable PSReadLine) {
     # Key bindings for history search
     Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
     Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+    # Tab: navigable menu completion (consistent with Bash/Zsh)
+    Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+    Set-PSReadLineKeyHandler -Key ShiftTab -Function MenuCompletePrevious
 }
 
 # ---- Aliases ----------------------------------------------------------------
