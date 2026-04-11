@@ -4,6 +4,14 @@
 # =============================================================================
 
 #Requires -RunAsAdministrator
+#Requires -Version 7.0
+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching under PowerShell 7..." -ForegroundColor Yellow
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path @args
+    exit $LASTEXITCODE
+}
+
 
 $packages = @(
     # Shell & terminal

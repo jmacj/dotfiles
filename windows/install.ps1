@@ -9,6 +9,13 @@ param(
     [string]$DotfilesRepo = "https://github.com/jmacj/dotfiles.git"
 )
 
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching under PowerShell 7..." -ForegroundColor Yellow
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $MyInvocation.MyCommand.Path @args
+    exit $LASTEXITCODE
+}
+
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 

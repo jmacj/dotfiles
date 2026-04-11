@@ -1,6 +1,13 @@
 # {{ include "windows/packages.ps1" | sha256sum }}
-# Run as Administrator in PowerShell
+# Run under PowerShell 7+
 # This script is triggered by changes to windows/packages.ps1
+
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Relaunching under PowerShell 7..." -ForegroundColor Yellow
+    $script = $MyInvocation.MyCommand.Path
+    & pwsh -NoProfile -ExecutionPolicy Bypass -File $script @args
+    exit $LASTEXITCODE
+}
 
 Write-Host "Checking for Windows package updates..." -ForegroundColor Gray
 & "{{ .chezmoi.sourceDir }}/windows/packages.ps1"

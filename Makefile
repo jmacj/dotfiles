@@ -7,7 +7,7 @@ SHELL := /bin/bash
 SOURCE_DIR := $(shell chezmoi source-path 2>/dev/null)
 ifeq ($(SOURCE_DIR),)
   ifeq ($(OS),Windows_NT)
-    SOURCE_DIR := $(shell powershell -NoProfile -Command "& chezmoi source-path" 2>nul)
+    SOURCE_DIR := $(shell pwsh -NoProfile -Command "& chezmoi source-path" 2>nul)
   else
     SOURCE_DIR := $(shell command -v chezmoi >/dev/null && chezmoi source-path 2>/dev/null || echo .)
   endif
@@ -25,7 +25,7 @@ update:
 ## packages: Manually install required tools (Windows/macOS/Linux)
 packages:
 ifeq ($(OS),Windows_NT)
-	powershell -ExecutionPolicy Bypass -File "$(SOURCE_DIR)\windows\packages.ps1"
+	pwsh -ExecutionPolicy Bypass -Command "Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-ExecutionPolicy Bypass -File \"$(SOURCE_DIR)\windows\packages.ps1\"'"
 else
 	@UNAME_S=$$(uname -s); \
 	if [ "$$UNAME_S" = "Linux" ]; then \
