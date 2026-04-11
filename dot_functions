@@ -143,6 +143,7 @@ wta() {
   local branch="${1:?Usage: wta <branch> [base]}"
   local base="${2:-main}"
   local root; root=$(git rev-parse --show-toplevel) || return 1
+  root=$(cygpath -u "$root")
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local wtpath="$code_root/$rel.worktrees/$branch"
@@ -167,6 +168,7 @@ cpr() {
   local pr="${1:?Usage: cpr <PR_NUMBER> [remote]}"
   local remote="${2:-origin}"
   local root; root=$(git rev-parse --show-toplevel) || return 1
+  root=$(cygpath -u "$root")
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local branch; branch=$(gh pr view "$pr" --json headRefName -q .headRefName) || return 1
@@ -187,6 +189,7 @@ cpr() {
 # Steps out to repo root first if currently inside the worktree being removed.
 wtr() {
   local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
+  root=$(cygpath -u "$root")
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local branch="${1:-}"
@@ -236,6 +239,7 @@ cdwt() {
 # Removes the worktree, deletes local branch, prunes stale entries, returns to repo root.
 wtdone() {
   local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
+  root=$(cygpath -u "$root")
   local branch; branch=$(git rev-parse --abbrev-ref HEAD)
 
   case "$branch" in
