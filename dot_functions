@@ -116,10 +116,11 @@ path_remove() {
 # On Git-Bash/MSYS2 cygpath converts Windows paths (C:\foo) to /c/foo.
 # On native POSIX systems cygpath is absent and $CODE_ROOT is already POSIX.
 _code_root_posix() {
+  local p="${1:-$CODE_ROOT}"
   if command -v cygpath >/dev/null 2>&1; then
-    cygpath -u "$CODE_ROOT"
+    cygpath -u "$p"
   else
-    printf '%s' "$CODE_ROOT"
+    printf '%s' "$p"
   fi
 }
 
@@ -143,7 +144,7 @@ wta() {
   local branch="${1:?Usage: wta <branch> [base]}"
   local base="${2:-main}"
   local root; root=$(git rev-parse --show-toplevel) || return 1
-  root=$(cygpath -u "$root")
+  root=$(_code_root_posix "$root")
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local wtpath="$code_root/$rel.worktrees/$branch"
@@ -172,7 +173,7 @@ cpr() {
   local pr="${1:?Usage: cpr <PR_NUMBER> [remote]}"
   local remote="${2:-origin}"
   local root; root=$(git rev-parse --show-toplevel) || return 1
-  root=$(cygpath -u "$root")
+  root=$(_code_root_posix "$root")
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local branch; branch=$(gh pr view "$pr" --json headRefName -q .headRefName) || return 1
@@ -193,7 +194,7 @@ cpr() {
 # Steps out to repo root first if currently inside the worktree being removed.
 wtr() {
   local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
-  root=$(cygpath -u "$root")
+  root=$(_code_root_posix "$root")
   local code_root; code_root=$(_code_root_posix)
   local rel="${root#$code_root/}"
   local branch="${1:-}"
