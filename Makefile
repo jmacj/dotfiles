@@ -46,7 +46,7 @@ diff:
 status:
 	chezmoi status
 
-## edit: Edit a managed file (usage: make edit FILE=~/.bashrc)
+## edit: Edit a managed file (usage: make edit FILE=~/.zshrc)
 edit:
 ifeq ($(OS),Windows_NT)
 	@if not defined FILE (echo Error: FILE argument is required & exit /b 1)

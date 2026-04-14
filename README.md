@@ -18,7 +18,8 @@ Or using the bootstrap script:
 ./install.sh
 ```
 
-### Windows (PowerShell 5.1 or 7+, run as Administrator)
+### Windows (WSL + Zsh)
+Environment is bootstrapped via PowerShell, then transitions to WSL/Ubuntu with Zsh.
 
 ```powershell
 (irm https://get.chezmoi.io/ps1) | powershell -c -
@@ -53,17 +54,13 @@ dotfiles/
 ├── .chezmoi.toml.tmpl        # chezmoi's own config (identity/workflow)
 ├── dot_config/
 │   ├── fzf/
-│   │   ├── fzf.bash
-│   │   ├── fzf.zsh
-│   │   └── fzf.ps1
+│   │   └── fzf.zsh
+│   ├── ghostty/                  # Modern terminal (macOS)
 │   ├── ripgrep/
 │   │   └── ripgreprc
 │   ├── starship.toml              # Cross-shell prompt
 │   └── tmux/
 │       └── tmux.conf
-├── Documents/
-│   └── WindowsPowerShell/
-│       └── Microsoft.PowerShell_profile.ps1.tmpl
 ├── dot_ssh/
 │   └── config.tmpl               # SSH client config
 ├── macos/
@@ -74,8 +71,6 @@ dotfiles/
 │   └── packages.ps1              # Winget packages
 ├── .editorconfig
 ├── dot_aliases.tmpl
-├── dot_bash_profile
-├── dot_bashrc.tmpl
 ├── dot_curlrc
 ├── dot_exports.tmpl
 ├── dot_functions
@@ -100,8 +95,8 @@ chezmoi uses a **source directory** with specific naming conventions:
 
 | Source name | What it becomes |
 |---|---|
-| `dot_bashrc` | `~/.bashrc` |
-| `dot_gitconfig.tmpl` | `~/.gitconfig` (processed as Go template) |
+| `dot_zshrc.tmpl` | `~/.zshrc` |
+| `dot_gitconfig.tmpl` | `~/.gitconfig` |
 | `dot_config/starship.toml` | `~/.config/starship.toml` |
 
 Files ending in `.tmpl` are Go templates — chezmoi injects variables like OS, username, and email before writing to disk.
@@ -116,7 +111,7 @@ chezmoi apply
 chezmoi diff
 
 # Edit a managed file
-chezmoi edit ~/.bashrc
+chezmoi edit ~/.zshrc
 
 # Add a new file to be managed
 chezmoi add ~/.config/somefile
@@ -136,9 +131,8 @@ Files committed here are shared across all machines. For local-only config, crea
 | File | Sourced by |
 |---|---|
 | `~/.gitconfig.local` | `.gitconfig` via `[include]` |
-| `~/.local_aliases` | `.bashrc` / `.zshrc` |
-| `~/.local_exports` | `.bashrc` / `.zshrc` |
-| `~/.local_profile.ps1` | PowerShell profile |
+| `~/.local_aliases` | `.zshrc` |
+| `~/.local_exports` | `.zshrc` |
 
 ## Security & Standards
 
@@ -148,8 +142,8 @@ This repository is hardened following modern security best practices:
 - **Git Integrity**: Enabled `fsckobjects` for all transfers to prevent corruption.
 - **Credential Protection**: Global gitignore excludes `.netrc`, `.npmrc`, and common secret patterns.
 - **Resilient Shell**: Environment-aware PATH management and OS-specific guards.
-- **Expert Productivity**: High-performance settings for Tmux, Git (Delta, verbose commits), and PowerShell.
-- **Modern Stack**: Optimized for the **Warp** terminal and modern CLI tools (`eza`, `bat`, `fzf`).
+- **Expert Productivity**: High-performance settings for Tmux, Git (Delta, verbose commits), and Zsh.
+- **Modern Stack**: Optimized for **Ghostty** (macOS) and **Windows Terminal** (WSL) with modern CLI tools (`eza`, `bat`, `fzf`).
 
 ## 🔐 Private Repositories
 

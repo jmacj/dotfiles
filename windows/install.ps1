@@ -1,5 +1,5 @@
-# =============================================================================
-# windows/install.ps1  —  Bootstrap dotfiles on Windows
+# windows/install.ps1  —  Minimal bootstrap for WSL-first workflow
+# This script installs core management tools on Windows and sets up Zsh in WSL.
 # Run as Administrator in PowerShell 7+:
 #   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 #   .\windows\install.ps1
@@ -76,9 +76,23 @@ function Install-Packages {
     }
 }
 
+# ---- Install Zsh in WSL -----------------------------------------------------
+function Install-ZshInWSL {
+    Write-Info "Checking for WSL..."
+    $wslCheck = wsl.exe --list 2>$null
+    if ($null -ne $wslCheck) {
+        Write-Info "WSL detected. Installing Zsh inside default distribution..."
+        wsl.exe -- bash -c "sudo apt-get update && sudo apt-get install -y zsh && chsh -s \$(which zsh) \$USER"
+        Write-Success "Zsh installed and set as default in WSL. Restart your WSL session to see changes."
+    } else {
+        Write-Warn "WSL not found or not initialized. Skipping Zsh installation."
+    }
+}
+
 # ---- Main -------------------------------------------------------------------
 Write-Info "Starting dotfiles bootstrap for Windows..."
 Install-Chezmoi
 Apply-Dotfiles
 Install-Packages
+Install-ZshInWSL
 Write-Success "Bootstrap complete! Restart your terminal."

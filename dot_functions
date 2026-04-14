@@ -1,5 +1,6 @@
+# shellcheck shell=zsh
 # =============================================================================
-# ~/.functions  —  shell utility functions, sourced by .bashrc and .zshrc
+# ~/.functions  —  shell utility functions, sourced by .zshrc
 # =============================================================================
 
 # ---- mkcd: make directory and cd into it ------------------------------------

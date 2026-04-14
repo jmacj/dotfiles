@@ -23,7 +23,7 @@ This repo follows [Conventional Commits](https://www.conventionalcommits.org/):
 
 **Types:** `feat`, `fix`, `chore`, `docs`, `refactor`, `test`
 
-**Scope examples:** `zsh`, `git`, `tmux`, `powershell`, `ssh`, `starship`
+**Scope examples:** `zsh`, `git`, `tmux`, `ghostty`, `ssh`, `starship`
 
 **Examples:**
 
@@ -37,7 +37,7 @@ docs(readme): update bootstrap instructions
 ## Adding a New Dotfile
 
 1. Place the file in the chezmoi source directory using its naming convention:
-   - Prefix dotfiles with `dot_` (e.g. `dot_bashrc` → `~/.bashrc`)
+   - Prefix dotfiles with `dot_` (e.g. `dot_zshrc` → `~/.zshrc`)
    - Append `.tmpl` if the file needs OS/machine-specific templating
 2. Use `chezmoi add <file>` to let chezmoi track it
 3. Use `chezmoi edit <file>` to modify managed files
@@ -48,9 +48,7 @@ docs(readme): update bootstrap instructions
 
 Before committing, verify your changes on each applicable OS:
 
-- **Bash:** `bash -n ~/.bashrc`
 - **Zsh:** `zsh -n ~/.zshrc`
-- **PowerShell:** `pwsh -NoProfile -File $PROFILE`
 - **Git:** `git config --list --global`
 - **chezmoi:** `chezmoi diff` (should show no unexpected changes after apply)
 

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Removed PowerShell and Bash as primary shells; standardized on Zsh across macOS and WSL
+- Replaced Warp with Ghostty (macOS) and Windows Terminal (WSL/Windows)
+- Removed `dot_bash_profile`, `dot_bashrc.tmpl`, and PowerShell profile
+- Removed `fzf.bash` and `fzf.ps1`; fzf integration is now Zsh-only via `fzf.zsh`
+- Removed `dot_warp/` themes directory; Ghostty themes remain in `dot_config/ghostty/themes/`
+- `linux/packages.sh` now installs Zsh and sets it as the default login shell
+- `windows/install.ps1` now installs Zsh inside WSL and sets it as the default login shell
+
 ### Added
 - Comprehensive cross-platform configuration for Windows (PowerShell 5.1/7+), macOS (Zsh), and Linux (Bash)
 - Standardized Windows support with PowerShell profile located at `Documents/WindowsPowerShell/`

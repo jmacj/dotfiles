@@ -1,24 +1,18 @@
 # =============================================================================
-# ~/.exports  —  environment variables, sourced by .bashrc and .zshrc
+# ~/.exports  —  environment variables, sourced by .zshrc
 # =============================================================================
 
 # ---- Path Guard (Emergency) -------------------------------------------------
-# Ensure core system paths are always present before doing anything else
-if [[ -n "$ZSH_VERSION" ]]; then
-  # Zsh-specific robust path handling (using the 'path' array)
-  typeset -U path # Keep unique
-  path=(
-    /usr/local/bin
-    /usr/bin
-    /bin
-    /usr/sbin
-    /sbin
-    $path
-  )
-else
-  # Bash/Portable version
-  export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin${PATH:+:$PATH}"
-fi
+# Ensure core system paths are always present. Using Zsh-native 'path' array.
+typeset -U path
+path=(
+  /usr/local/bin
+  /usr/bin
+  /bin
+  /usr/sbin
+  /sbin
+  $path
+)
 
 # ---- Editor -----------------------------------------------------------------
 # Prefer vim, fall back to nano, then vi (present on virtually all POSIX systems)
@@ -80,21 +74,19 @@ fi
 # nvm
 export NVM_DIR="$HOME/.nvm"
 
-# Local bin and standard homebrew paths (redundancy for emergency)
-if [[ -n "$ZSH_VERSION" ]]; then
-  path=(
-    "$HOME/.local/bin"
-    "$HOME/bin"
-    "/opt/homebrew/bin"
-    "/usr/local/bin"
-    $path
-  )
-else
-  export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
-fi
+# Local bin and standard homebrew paths
+path=(
+  "$HOME/.local/bin"
+  "$HOME/bin"
+  "/opt/homebrew/bin"
+  "/usr/local/bin"
+  $path
+)
+export PATH
+
 
 # ---- Code root --------------------------------------------------------------
-# Root for all project repos and worktrees. Override per machine in ~/.local_bashrc or ~/.local_zshrc.
+# Root for all project repos and worktrees. Override per machine in ~/.local_zshrc.
 export CODE_ROOT="${CODE_ROOT:-$HOME/code}"
 
 # ---- Local exports (not committed) ------------------------------------------

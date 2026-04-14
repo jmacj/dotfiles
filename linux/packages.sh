@@ -17,6 +17,18 @@ success() { printf "\033[0;32m[OK]\033[0m    %s\n" "$*"; }
 warn()    { printf "\033[0;33m[WARN]\033[0m  %s\n" "$*"; }
 error()   { printf "\033[0;31m[ERROR]\033[0m %s\n" "$*" >&2; }
 
+# ---- Shell Setup ------------------------------------------------------------
+if ! command -v zsh &>/dev/null; then
+  info "Zsh not found. Attempting to install via apt-get..."
+  sudo apt-get update && sudo apt-get install -y zsh || warn "Failed to install Zsh via apt-get."
+fi
+
+if [[ "${SHELL:-}" != *zsh ]]; then
+  info "Changing default shell to zsh..."
+  chsh -s "$(which zsh)" "${USER:-$(whoami)}" || warn "Failed to change shell. You may need to run 'chsh -s \$(which zsh)' manually."
+  success "Shell change requested. Please log out and back in for the change to take effect."
+fi
+
 # Helper to download from GitHub releases
 # Usage: download_gh_release "owner/repo" "pattern" "output_name"
 download_gh_release() {

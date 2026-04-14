@@ -1,6 +1,6 @@
-# shellcheck shell=bash
+# shellcheck shell=zsh
 # =============================================================================
-# ~/.aliases  —  shared aliases, sourced by .bashrc and .zshrc
+# ~/.aliases  —  shared aliases, sourced by .zshrc
 # OS-conditional blocks use chezmoi's Go template syntax (processed at apply).
 # =============================================================================
 
@@ -22,10 +22,6 @@ else
   alias ls='ls -G'
   alias ll='ls -lhFG'
   alias la='ls -lhAFG'
-  {{- else if eq .chezmoi.os "windows" }}
-  alias ls='ls --color=auto'
-  alias ll='ls -lhF --color=auto'
-  alias la='ls -lhAF --color=auto'
   {{- else }}
   alias ls='ls --color=auto'
   alias ll='ls -lhF --color=auto'
@@ -54,37 +50,6 @@ alias gstp='git stash pop'
 alias gbr='git branch'
 alias gundo='git reset --soft HEAD~1'
 
-# cpr - create a git worktree for a pull request
-# Usage: cpr <PR_NUMBER> [<REMOTE>]
-# Example: cpr 1234 origin
-# If no remote is specified, it defaults to 'origin'.
-# Note: This command fetches the branch associated with the PR and creates a worktree in the current directory.
-# The worktree will be named after the branch.
-# Ensure you have the GitHub CLI installed and authenticated with `gh auth login`.
-cpr() {
-  pr="$1"
-  remote="${2:-origin}"
-  root=$(git rev-parse --show-toplevel)
-  repo=$(basename "$root")
-  branch=$(gh pr view "$pr" --json headRefName -q .headRefName)
-  wtpath="$HOME/worktrees/$repo/$branch"
-
-  mkdir -p "$(dirname "$wtpath")"
-  git fetch "$remote" "$branch"
-  git worktree add "$wtpath" "$branch"
-  [ -f "$root/.env" ] && cp "$root/.env" "$wtpath/.env"
-  cd "$wtpath" || return
-  echo "Switched to new worktree for PR #${pr}: $branch"
-}
-
-# cdwt - interactive navigation to worktrees
-cdwt() {
-  local wt=$(find "$HOME/worktrees" -mindepth 3 -maxdepth 3 -type d 2>/dev/null | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border)
-  if [ -n "$wt" ]; then
-    cd "$wt"
-  fi
-}
-
 # ---- Sudo (allow alias expansion) -------------------------------------------
 alias sudo='sudo '
 
@@ -97,8 +62,6 @@ alias du='du -h'
 alias free='free -h'
 {{- else if eq .chezmoi.os "darwin" }}
 alias free='top -l 1 -s 0 | grep PhysMem'
-{{- else if eq .chezmoi.os "windows" }}
-alias free='powershell.exe -Command "Get-CimInstance Win32_OperatingSystem | Select-Object @{n=\"Total(MB)\";e={[math]::Round(\$_.TotalVisibleMemorySize/1024)}}, @{n=\"Free(MB)\";e={[math]::Round(\$_.FreePhysicalMemory/1024)}} | Format-Table -AutoSize"'
 {{- end }}
 
 # ---- Networking -------------------------------------------------------------
@@ -107,16 +70,14 @@ alias ip='curl -s ifconfig.me'
 alias localip='hostname -I | awk "{print \$1}"'
 {{- else if eq .chezmoi.os "darwin" }}
 alias localip='ipconfig getifaddr en0'
-{{- else if eq .chezmoi.os "windows" }}
-alias localip='powershell.exe -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { \$_.IPAddress -notlike \"127.*\" -and \$_.IPAddress -notlike \"169.254.*\" } | Select-Object -First 1 -ExpandProperty IPAddress"'
 {{- end }}
 alias ports='netstat -tulanp 2>/dev/null || netstat -an'
 
 # Copy SSH public key to clipboard
 {{- if eq .chezmoi.os "darwin" }}
 alias pubkey='[ -f ~/.ssh/id_ed25519.pub ] && pbcopy < ~/.ssh/id_ed25519.pub && echo "=> Public key copied to clipboard." || echo "Error: Public key not found."'
-{{- else if eq .chezmoi.os "windows" }}
-alias pubkey='[ -f ~/.ssh/id_ed25519.pub ] && clip.exe < ~/.ssh/id_ed25519.pub && echo "=> Public key copied to clipboard." || echo "Error: Public key not found."'
+{{- else if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+alias pubkey='[ -f ~/.ssh/id_ed25519.pub ] && clip.exe < ~/.ssh/id_ed25519.pub && echo "=> Public key copied to clipboard (WSL)." || echo "Error: Public key not found."'
 {{- else }}
 alias pubkey='[ -f ~/.ssh/id_ed25519.pub ] && (command -v xclip >/dev/null && xclip -sel clip < ~/.ssh/id_ed25519.pub || command -v xsel >/dev/null && xsel --clipboard --input < ~/.ssh/id_ed25519.pub || cat ~/.ssh/id_ed25519.pub) && echo "=> Public key copied to clipboard (or printed above)."'
 {{- end }}

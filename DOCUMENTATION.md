@@ -12,8 +12,9 @@ dotfiles/
 ├── dot_*                     ← your shell/tool config files
 ├── dot_config/               ← ~/.config/* tool configs
 ├── dot_ssh/                  ← SSH client config
-├── macos/                    ← macOS-specific: Homebrew + system prefs
-├── windows/                  ← Windows-specific: bootstrap + Winget packages
+├── linux/                    ← Linux/WSL-specific: packages
+├── windows/                  ← Windows-specific: minimal bootstrap for WSL
+├── run_onchange_after_linux_install-packages.sh.tmpl
 ├── run_onchange_after_macos_install-packages.sh.tmpl
 ├── run_onchange_after_windows_install-packages.ps1.tmpl
 ├── .chezmoiignore            ← files to exclude from $HOME
@@ -50,9 +51,7 @@ On first run, chezmoi **interactively asks** for your name, email, and context (
 
 ## 🐚 Shell Config Files
 
-### `dot_exports.tmpl` → `~/.exports`
-
-Environment variables shared by both Bash and Zsh:
+Environment variables sourced by Zsh:
 
 | Variable | Value |
 |---|---|
@@ -69,24 +68,24 @@ Environment variables shared by both Bash and Zsh:
 
 ### `dot_aliases.tmpl` → `~/.aliases`
 
-Shell shortcuts sourced by both Bash and Zsh:
+Shell shortcuts sourced by Zsh:
 
 | Category | Examples |
 |---|---|
 | **Navigation** | `..`, `...`, `....`, `~` |
-| **File listing** | `ls`, `ll`, `la` — uses **eza** if available (macOS/Linux), plain `ls` on Windows |
+| **File listing** | `ls`, `ll`, `la` — uses **eza** if available, falls back to `ls` |
 | **Git** | `gs`, `ga`, `gc`, `gcm`, `gca`, `gco`, `gcb`, `gm`, `gmnf`, `gp`, `gpl`, `gl`, `gd`, `gundo` |
 | **Utilities** | `grep` (colored), `mkdir -pv`, `df -h`, `du -h`, `sudo` (expanded) |
 | **Networking** | `ip` (public IP), `localip`, `ports`, `pubkey` (multi-platform clipboard) |
 | **Dev** | `ni`, `pa`, `pi`, `pr`, `pd`, `nci`, `pci`, `serve` |
-| **Terminal** | **Warp** (Recommended), Windows Terminal, iTerm2 |
-| **Open** | `open` → `xdg-open` on Linux |
+| **Terminal** | **Ghostty** (macOS), **Windows Terminal** (WSL/Windows) |
+| **Open** | `open` (`xdg-open` on Linux, `wslview` on WSL) |
 
 Sources `~/.local_aliases` at the end for machine-local aliases that aren't committed.
 
 ### `dot_functions` → `~/.functions`
 
-Utility shell functions sourced by both shells:
+Utility shell functions sourced by Zsh:
 
 | Function | What it does |
 |---|---|
@@ -101,26 +100,20 @@ Utility shell functions sourced by both shells:
 | `reload_shell` | Restarts your shell (`exec $SHELL -l`) |
 | `path_add <dir>` | Safely adds a directory to PATH if it exists and isn't there |
 | `path_remove <dir>` | Removes a directory from PATH |
-
-### `dot_bashrc.tmpl` → `~/.bashrc`
-
-Bash-specific config (skips if non-interactive). Sources `.exports`, `.aliases`, `.functions`, then:
-- Sets `HISTCONTROL`, `shopt` options (`histappend`, `cdspell`, `autocd`, `checkwinsize`)
-- Saves history after every command
-- Loads bash-completion (Homebrew variant on macOS)
-- Sources nvm, fzf, and initializes the **Starship** prompt
+| `is_wsl` | Detects if the environment is WSL |
 
 ### `dot_zshrc.tmpl` → `~/.zshrc`
 
-Similar to `.bashrc` but Zsh-flavored:
+Primary shell config (skips if non-interactive). Sources `.exports`, `.aliases`, `.functions`, then:
 - `setopt` flags: `AUTO_CD`, `CORRECT`, `SHARE_HISTORY`, `EXTENDED_HISTORY`, `INC_APPEND_HISTORY`, `HIST_IGNORE_DUPS`
 - **Visual Polish**: High-visibility colored completion headers and case-insensitive menu select.
 - Emacs keybindings + up/down arrow history search
-- Sources nvm, fzf, Starship
+- **WSL Optimizations**: Sets `BROWSER=wslview` if available.
+- Sources nvm, fzf, Starship prompt.
 
-### `dot_bash_profile` / `dot_zprofile.tmpl`
+### `dot_zprofile.tmpl`
 
-Login shell entry points — they just source `.bashrc` / `.zshrc` respectively.
+Login shell entry point — sources `.zshrc`.
 
 ---
 
@@ -160,10 +153,10 @@ Key settings:
 
 | File | Purpose |
 |---|---|
-| `starship.toml` | Cross-shell prompt (Bash, Zsh, PowerShell) |
-| `fzf/fzf.bash` + `fzf.zsh` + `fzf.ps1` | fzf key bindings/completion per shell |
+| `starship.toml` | Cross-shell prompt (Zsh) |
+| `fzf/fzf.zsh` | fzf key bindings and completion for Zsh |
 | `ripgrep/ripgreprc` | Default ripgrep flags (includes `web` type) |
-| `Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1.tmpl` | Windows PowerShell profile (templated) |
+| `ghostty/config` | Ghostty terminal configuration (macOS) |
 | `tmux/tmux.conf` | tmux terminal multiplexer (optimized for Vim, no Escape lag) |
 | `dot_ssh/config.tmpl` | SSH client config (templated for work vs personal keys) |
 
@@ -193,25 +186,19 @@ Applies macOS system preference tweaks via the `defaults` command:
 
 ### `install.ps1`
 
-Bootstrap script (run as Admin in Windows PowerShell 5.1 or PowerShell 7+):
+Bootstrap script (run as Admin in PowerShell 7+):
 1. Installs **chezmoi** via `winget` (or direct download fallback)
 2. Runs `chezmoi init --apply <repo>` to clone and apply all dotfiles
 3. Runs `packages.ps1` to install dev tools
-
-### `packages.ps1`
-
-Installs dev tools via **Winget**:
+4. Configures **Zsh** inside **WSL** as the primary development environment.
 
 | Tool | Purpose |
 |---|---|
-| Git, Warp, Windows Terminal | Shell & terminal |
-| Starship | Cross-shell prompt |
+| Git | Required for chezmoi |
+| Windows Terminal | Required to run WSL |
+| Nerd Font | Terminal rendering |
 | chezmoi | Dotfile manager |
-| GitHub CLI | `gh` commands |
-| ripgrep, fzf, bat, eza, fd, delta | Modern CLI replacements |
-| jq, yq | JSON/YAML processing |
-| nvm, pnpm | Package managers |
-| GnuPG, age | Encryption |
+| age | Encryption for chezmoi |
 
 ---
 
@@ -223,7 +210,7 @@ Installs dev tools via **Winget**:
 | `make update` | `chezmoi update` (pull + apply) |
 | `make diff` | `chezmoi diff` (preview changes) |
 | `make status` | `chezmoi status` |
-| `make edit FILE=~/.bashrc` | `chezmoi edit ~/.bashrc` |
+| `make edit FILE=~/.zshrc` | `chezmoi edit ~/.zshrc` |
 | `make clean` | `chezmoi purge` ⚠️ destructive |
 | `make doctor` | `chezmoi doctor` (diagnostics) |
 
@@ -236,11 +223,9 @@ These files are **gitignored** but auto-sourced — for secrets, work-specific s
 | File | Sourced by |
 |---|---|
 | `~/.gitconfig.local` | `.gitconfig` via `[include]` |
-| `~/.local_aliases` | `.bashrc` / `.zshrc` |
-| `~/.local_exports` | `.bashrc` / `.zshrc` |
-| `~/.local_bashrc` | `.bashrc` |
+| `~/.local_aliases` | `.zshrc` |
+| `~/.local_exports` | `.zshrc` |
 | `~/.local_zshrc` | `.zshrc` |
-| `~/.local_profile.ps1` | PowerShell profile |
 
 ---
 
@@ -253,7 +238,7 @@ reads .chezmoi.toml.tmpl → prompts for name/email/context
     ↓
 processes all .tmpl files (fills in OS, name, email, context variables)
     ↓
-writes final files to ~ (e.g. ~/.bashrc, ~/.gitconfig, ~/.aliases, ...)
+writes final files to ~ (e.g. ~/.zshrc, ~/.gitconfig, ~/.aliases, ...)
     ↓
 shell starts → sources .exports → .aliases → .functions → tool inits
 ```

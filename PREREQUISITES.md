@@ -3,7 +3,7 @@
 To get the most out of these dotfiles, you should install the following tools. 
 
 > [!TIP]
-> **Automatic Installation**: These are now automatically handled by `chezmoi apply` via `run_onchange_` scripts. If you add a tool to the list, `chezmoi` will install it for you next time you apply.
+> **WSL-First Workflow**: We prioritize **WSL (Windows Subsystem for Linux)** for all development tasks on Windows. Most tools listed below are installed inside the WSL environment, keeping the Windows host clean.
 
 ## 🚀 Core Requirements
 
@@ -11,9 +11,10 @@ To get the most out of these dotfiles, you should install the following tools.
 |---|---|---|
 | **[chezmoi](https://www.chezmoi.io/)** | Dotfile Manager | `winget install chezmoi` / `brew install chezmoi` |
 | **Git** | Version Control | `winget install Git.Git` / `brew install git` |
-| **[Warp](https://www.warp.dev/)** | Modern AI-powered terminal | `winget install Warp.Warp` / `brew install --cask warp` |
+| **[Ghostty](https://ghostty.org/)** | Modern terminal for macOS | `brew install --cask ghostty` |
+| **Windows Terminal** | Terminal for WSL on Windows | Ships with Windows 11; `winget install Microsoft.WindowsTerminal` |
 
-## ✨ Shell Enhancements (Highly Recommended)
+## ✨ Shell Enhancements (WSL & macOS)
 
 These tools power the aliases and the visual experience:
 
@@ -27,7 +28,7 @@ These tools power the aliases and the visual experience:
 | **[eza](https://github.com/eza-community/eza)** | Modern replacement for `ls` | `ls`, `ll`, `la` |
 | **[fd](https://github.com/sharkdp/fd)** | Fast replacement for `find` | (Used by fzf) |
 
-## 🛠️ Development Tools
+## 🛠️ Development Tools (WSL & macOS)
 
 | Tool | Purpose | Aliases Enabled |
 |---|---|---|
@@ -49,7 +50,7 @@ We recommend using these to manage the tools above:
 
 ## ⚡ Quick Install (Windows)
 
-Run this from an Administrator PowerShell to install the bulk of these at once:
+Run this from an Administrator PowerShell to bootstrap the environment (installs tools and sets up Zsh in WSL):
 ```powershell
-.\windows\packages.ps1
+.\windows\install.ps1
 ```

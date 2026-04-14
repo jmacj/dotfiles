@@ -16,11 +16,11 @@
 
 ## Testing
 
-- [ ] Tested on **Windows** (PowerShell / WSL)
+- [ ] Tested on **WSL** (Ubuntu 24.04 + Zsh)
 - [ ] Tested on **macOS**
 - [ ] Tested on **Linux**
 - [ ] Ran `chezmoi diff` — no unexpected changes
-- [ ] Shell syntax validated (`bash -n`, `zsh -n`, `pwsh`)
+- [ ] Shell syntax validated (`zsh -n`)
 
 ## Checklist
 

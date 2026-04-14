@@ -37,7 +37,7 @@ brew "shfmt"             # shell script formatter
 brew "hadolint"          # Dockerfile linter
 
 # ---- macOS apps (casks) -----------------------------------------------------
-cask "warp"
+cask "ghostty"
 cask "font-jetbrains-mono-nerd-font"
 # Uncomment and add casks as needed:
 # cask "iterm2"

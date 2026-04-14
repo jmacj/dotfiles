@@ -1,0 +1,12 @@
+#!/bin/bash
+# {{ include "linux/packages.sh" | sha256sum }}
+
+# This script is triggered by changes to linux/packages.sh
+# It works on Linux and WSL systems.
+
+if [[ "$(uname)" == "Linux" ]]; then
+    echo "Checking for Linux package updates..."
+    bash "{{ .chezmoi.sourceDir }}/linux/packages.sh"
+else
+    echo "Not a Linux system. Skipping package installation."
+fi

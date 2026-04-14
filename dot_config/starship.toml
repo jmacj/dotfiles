@@ -7,36 +7,6 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 palette = "jetbrains"
 
-[palettes.jetbrains]
-blue   = "#3592C4"
-green  = "#629755"
-orange = "#ED9439"
-purple = "#9D77BD"
-yellow = "#FFC66D"
-red    = "#FF6B68"
-grey   = "#6B6B6B"
-white  = "#A9B7C6"
-
-[palettes.neo]
-blue   = "#0284c7"
-green  = "#059669"
-orange = "#d97706"
-purple = "#7c3aed"
-yellow = "#d97706"
-red    = "#e11d48"
-grey   = "#52525b"
-white  = "#f4f4f5"
-
-[palettes.jmacj]
-blue   = "#3b82f6"
-green  = "#a1a1aa"
-orange = "#f4f4f5"
-purple = "#71717a"
-yellow = "#f4f4f5"
-red    = "#71717a"
-grey   = "#52525b"
-white  = "#f4f4f5"
-
 format = """
 $username\
 $hostname\
@@ -46,11 +16,14 @@ $git_state\
 $git_status\
 $package\
 $cmd_duration\
-$line_break\
 $python\
 $php\
 $nodejs\
+$line_break\
 $character"""
+
+right_format = """
+$time"""
 
 # ---- Directory --------------------------------------------------------------
 [directory]
@@ -108,6 +81,11 @@ style    = "bold yellow"
 success_symbol = "[❯](bold green)"
 error_symbol   = "[❯](bold red)"
 
+# ---- Time -------------------------------------------------------------------
+[time]
+format = "[$time]($style) "
+style  = "bold yellow"
+
 # ---- Username (show only in SSH) --------------------------------------------
 [username]
 show_always = false
@@ -118,3 +96,35 @@ format      = "[$user]($style)@"
 ssh_only = true
 style    = "bold cyan"
 format   = "[$hostname]($style) "
+
+# ---- Palettes -------------------------------------------------------------
+
+[palettes.jetbrains]
+blue   = "#3592C4"
+green  = "#629755"
+orange = "#ED9439"
+purple = "#9D77BD"
+yellow = "#FFC66D"
+red    = "#FF6B68"
+grey   = "#6B6B6B"
+white  = "#A9B7C6"
+
+[palettes.neo]
+blue   = "#0284c7"
+green  = "#059669"
+orange = "#d97706"
+purple = "#7c3aed"
+yellow = "#d97706"
+red    = "#e11d48"
+grey   = "#52525b"
+white  = "#f4f4f5"
+
+[palettes.jmacj]
+blue   = "#3b82f6"
+green  = "#a1a1aa"
+orange = "#f4f4f5"
+purple = "#71717a"
+yellow = "#f4f4f5"
+red    = "#71717a"
+grey   = "#52525b"
+white  = "#f4f4f5"
