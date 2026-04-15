@@ -23,10 +23,21 @@ if ! command -v zsh &>/dev/null; then
   sudo apt-get update && sudo apt-get install -y zsh || warn "Failed to install Zsh via apt-get."
 fi
 
+if ! command -v make &>/dev/null; then
+  info "Make not found. Attempting to install via apt-get..."
+  sudo apt-get update && sudo apt-get install -y make || warn "Failed to install Make via apt-get."
+fi
+
 if [[ "${SHELL:-}" != *zsh ]]; then
   info "Changing default shell to zsh..."
   chsh -s "$(which zsh)" "${USER:-$(whoami)}" || warn "Failed to change shell. You may need to run 'chsh -s \$(which zsh)' manually."
   success "Shell change requested. Please log out and back in for the change to take effect."
+fi
+
+if ! locale -a | grep -iE 'en_US\.utf-?8' > /dev/null 2>&1; then
+  info "Locale en_US.UTF-8 not found. Generating..."
+  sudo apt-get update && sudo apt-get install -y locales || true
+  sudo locale-gen en_US.UTF-8 || warn "Failed to generate locale."
 fi
 
 # Helper to download from GitHub releases

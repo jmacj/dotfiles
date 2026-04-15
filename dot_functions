@@ -245,7 +245,7 @@ cdwt() {
 # Removes the worktree, deletes local branch, prunes stale entries, returns to repo root.
 wtdone() {
   local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
-  root=$(cygpath -u "$root")
+  root=$(_code_root_posix "$root")
   local branch; branch=$(git rev-parse --abbrev-ref HEAD)
 
   case "$branch" in
