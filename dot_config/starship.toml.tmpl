@@ -5,7 +5,7 @@
 # =============================================================================
 
 "$schema" = 'https://starship.rs/config-schema.json'
-palette = "jetbrains"
+palette = "{{ .theme }}"
 
 format = """
 $username\
@@ -85,6 +85,7 @@ error_symbol   = "[❯](bold red)"
 [time]
 format = "[$time]($style) "
 style  = "bold yellow"
+disabled = false
 
 # ---- Username (show only in SSH) --------------------------------------------
 [username]

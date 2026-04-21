@@ -90,6 +90,14 @@ reload_shell() {
   exec "$SHELL" -l
 }
 
+# ---- gsmu: update submodules, commit, push ----------------------------------
+gsmu() {
+  git submodule update --remote \
+    && git add . \
+    && git commit -m "chore: update submodules" \
+    && git push
+}
+
 # ---- is_wsl: returns 0 if running in WSL ------------------------------------
 is_wsl() {
   grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null

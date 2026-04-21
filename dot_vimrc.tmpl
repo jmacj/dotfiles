@@ -1,0 +1,195 @@
+" =============================================================================
+" ~/.vimrc  —  Multi-Theme Setup (Theme: {{ .theme }})
+" =============================================================================
+
+" ---- Plugin Bootstrapping ---------------------------------------------------
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+  " Navigation & Search
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
+  
+  " UI & Aesthetics
+  Plug 'itchyny/lightline.vim'
+  Plug 'sheerun/vim-polyglot'      " Better syntax for many languages
+  Plug 'editorconfig/editorconfig-vim'
+call plug#end()
+
+" ---- General Settings -------------------------------------------------------
+set nocompatible
+filetype plugin indent on
+syntax on
+set termguicolors
+set mouse=a
+set updatetime=300
+set timeoutlen=500
+set clipboard^=unnamed,unnamedplus
+
+set number
+set relativenumber
+set cursorline
+set ignorecase
+set smartcase
+set incsearch
+set nohlsearch
+set expandtab
+set shiftwidth=4
+set tabstop=4
+set softtabstop=4
+set smartindent
+set noshowmode
+set hidden
+set splitbelow
+set splitright
+set scrolloff=8
+
+" ---- Theme Palette Definition -----------------------------------------------
+{{- if eq .theme "jmacj" }}
+" JMACJ: Strictly grayscale with blue accent
+let s:bg      = "#09090b"
+let s:fg      = "#a1a1aa"
+let s:accent  = "#3b82f6"
+let s:muted   = "#71717a"
+let s:bright  = "#f4f4f5"
+
+let s:palette = {
+  \ 'bg':      s:bg,
+  \ 'fg':      s:fg,
+  \ 'comment': s:muted,
+  \ 'const':   s:bright,
+  \ 'string':  s:muted,
+  \ 'ident':   s:fg,
+  \ 'func':    s:accent,
+  \ 'stat':    s:bright,
+  \ 'preproc': s:muted,
+  \ 'type':    s:fg,
+  \ 'special': s:accent,
+  \ 'error':   "#ef4444"
+  \ }
+{{- else if eq .theme "neo" }}
+" NEO: Vibrant Zinc-based palette
+let s:bg      = "#09090b"
+let s:fg      = "#a1a1aa"
+let s:palette = {
+  \ 'bg':      s:bg,
+  \ 'fg':      s:fg,
+  \ 'comment': "#52525b",
+  \ 'const':   "#fbbf24",
+  \ 'string':  "#34d399",
+  \ 'ident':   s:fg,
+  \ 'func':    "#38bdf8",
+  \ 'stat':    "#fb7185",
+  \ 'preproc': "#a78bfa",
+  \ 'type':    "#2dd4bf",
+  \ 'special': "#38bdf8",
+  \ 'error':   "#e11d48"
+  \ }
+{{- else }}
+" JETBRAINS (Default)
+let s:bg      = "#09090b"
+let s:fg      = "#A9B7C6"
+let s:palette = {
+  \ 'bg':      s:bg,
+  \ 'fg':      s:fg,
+  \ 'comment': "#6B6B6B",
+  \ 'const':   "#ED9439",
+  \ 'string':  "#629755",
+  \ 'ident':   s:fg,
+  \ 'func':    "#FFC66D",
+  \ 'stat':    "#CC7832",
+  \ 'preproc': "#9D77BD",
+  \ 'type':    "#3592C4",
+  \ 'special': "#3592C4",
+  \ 'error':   "#FF6B68"
+  \ }
+{{- end }}
+
+" ---- Apply Custom Colorscheme -----------------------------------------------
+function! s:ApplyTheme(p)
+  let g:colors_name = "{{ .theme }}"
+  
+  " UI Elements
+  execute "hi Normal         guifg=" . a:p.fg . " guibg=" . a:p.bg
+  hi NonText        guifg=#3b3f41
+  hi CursorLine     guibg=#1e1f22 cterm=NONE
+  execute "hi LineNr         guifg=#858585 guibg=" . a:p.bg
+  hi CursorLineNr   guifg=#A9B7C6 guibg=#1e1f22
+  hi Visual         guibg=#214283
+  execute "hi Search         guifg=#000000 guibg=" . a:p.const
+  hi MatchParen     guifg=#FFC66D guibg=#3b3f41 gui=bold
+  
+  execute "hi Pmenu          guifg=" . a:p.fg . " guibg=#3b3f41"
+  hi PmenuSel       guifg=#f4f4f5 guibg=#214283
+  execute "hi VertSplit      guifg=#3b3f41 guibg=" . a:p.bg
+  
+  " Syntax
+  execute "hi Comment        guifg=" . a:p.comment . " gui=italic"
+  execute "hi Constant       guifg=" . a:p.const
+  execute "hi String         guifg=" . a:p.string
+  execute "hi Identifier     guifg=" . a:p.ident
+  execute "hi Function       guifg=" . a:p.func
+  execute "hi Statement      guifg=" . a:p.stat . " gui=bold"
+  execute "hi PreProc        guifg=" . a:p.preproc
+  execute "hi Type           guifg=" . a:p.type
+  execute "hi Special        guifg=" . a:p.special
+  execute "hi Error          guifg=" . a:p.error . " guibg=NONE"
+  execute "hi Todo           guifg=" . a:p.const . " guibg=NONE gui=bold"
+endfunction
+
+autocmd ColorScheme * call s:ApplyTheme(s:palette)
+call s:ApplyTheme(s:palette)
+
+" ---- FZF Alignment ----------------------------------------------------------
+let g:fzf_colors = {
+  \ 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Function'],
+  \ 'fg+':     ['fg', 'CursorLineNr', 'CursorLine', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorLine'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+" ---- Lightline Configuration ------------------------------------------------
+let g:lightline = {
+  \ 'colorscheme': 'darcula',
+  \ 'separator': { 'left': '', 'right': '' },
+  \ 'subseparator': { 'left': '', 'right': '' }
+  \ }
+
+" ---- Keybindings ------------------------------------------------------------
+let mapleader = " "
+nnoremap <leader>w :w<cr>
+nnoremap <leader>f :Files<cr>
+nnoremap <leader>g :Rg<cr>
+nnoremap <leader>b :Buffers<cr>
+nnoremap <leader><leader> :nohlsearch<cr>
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" ---- OS Specifics (WSL Clipboard) -------------------------------------------
+{{- if .chezmoi.kernel.osrelease | lower | contains "microsoft" }}
+if executable('clip.exe')
+  augroup WSLClipboard
+    autocmd!
+    autocmd TextYankPost * if v:event.operator ==# 'y' | call system('clip.exe', @0) | endif
+  augroup END
+endif
+{{- end }}
+
+" ---- Local Overrides --------------------------------------------------------
+if filereadable(expand("~/.vimrc.local"))
+  source ~/.vimrc.local
+endif
