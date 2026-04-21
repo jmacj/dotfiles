@@ -23,8 +23,9 @@ call plug#end()
 " ---- General Settings -------------------------------------------------------
 set nocompatible
 filetype plugin indent on
-syntax on
+set background=dark
 set termguicolors
+syntax on
 set mouse=a
 set updatetime=300
 set timeoutlen=500
@@ -110,38 +111,44 @@ let s:palette = {
 {{- end }}
 
 " ---- Apply Custom Colorscheme -----------------------------------------------
-function! s:ApplyTheme(p)
+function! s:ApplyTheme()
+  let l:p = s:palette
   
   " UI Elements
-  execute "hi Normal         guifg=" . a:p.fg . " guibg=" . a:p.bg
+  execute "hi Normal         guifg=" . l:p.fg . " guibg=" . l:p.bg
   hi NonText        guifg=#3b3f41
   hi CursorLine     guibg=#1e1f22 cterm=NONE
-  execute "hi LineNr         guifg=#858585 guibg=" . a:p.bg
+  execute "hi LineNr         guifg=#858585 guibg=" . l:p.bg
   hi CursorLineNr   guifg=#A9B7C6 guibg=#1e1f22
   hi Visual         guibg=#214283
-  execute "hi Search         guifg=#000000 guibg=" . a:p.const
+  execute "hi Search         guifg=#000000 guibg=" . l:p.const
   hi MatchParen     guifg=#FFC66D guibg=#3b3f41 gui=bold
   
-  execute "hi Pmenu          guifg=" . a:p.fg . " guibg=#3b3f41"
+  execute "hi Pmenu          guifg=" . l:p.fg . " guibg=#3b3f41"
   hi PmenuSel       guifg=#f4f4f5 guibg=#214283
-  execute "hi VertSplit      guifg=#3b3f41 guibg=" . a:p.bg
+  execute "hi VertSplit      guifg=#3b3f41 guibg=" . l:p.bg
   
   " Syntax
-  execute "hi Comment        guifg=" . a:p.comment . " gui=italic"
-  execute "hi Constant       guifg=" . a:p.const
-  execute "hi String         guifg=" . a:p.string
-  execute "hi Identifier     guifg=" . a:p.ident
-  execute "hi Function       guifg=" . a:p.func
-  execute "hi Statement      guifg=" . a:p.stat . " gui=bold"
-  execute "hi PreProc        guifg=" . a:p.preproc
-  execute "hi Type           guifg=" . a:p.type
-  execute "hi Special        guifg=" . a:p.special
-  execute "hi Error          guifg=" . a:p.error . " guibg=NONE"
-  execute "hi Todo           guifg=" . a:p.const . " guibg=NONE gui=bold"
+  execute "hi Comment        guifg=" . l:p.comment . " gui=italic"
+  execute "hi Constant       guifg=" . l:p.const
+  execute "hi String         guifg=" . l:p.string
+  execute "hi Identifier     guifg=" . l:p.ident
+  execute "hi Function       guifg=" . l:p.func
+  execute "hi Statement      guifg=" . l:p.stat . " gui=bold"
+  execute "hi PreProc        guifg=" . l:p.preproc
+  execute "hi Type           guifg=" . l:p.type
+  execute "hi Special        guifg=" . l:p.special
+  execute "hi Error          guifg=" . l:p.error . " guibg=NONE"
+  execute "hi Todo           guifg=" . l:p.const . " guibg=NONE gui=bold"
 endfunction
 
-autocmd ColorScheme * call s:ApplyTheme(s:palette)
-call s:ApplyTheme(s:palette)
+" Apply theme immediately and again after plugins load to ensure it persists
+augroup CustomTheme
+  autocmd!
+  autocmd ColorScheme,VimEnter * call s:ApplyTheme()
+augroup END
+
+call s:ApplyTheme()
 
 " ---- FZF Alignment ----------------------------------------------------------
 let g:fzf_colors = {
