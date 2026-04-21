@@ -58,7 +58,7 @@ bindkey '^[[Z' reverse-menu-complete    # Shift+Tab: go backward
 # ---- Terminal Integration ---------------------------------------------------
 {{- if eq .chezmoi.os "darwin" }}
 export TERMINAL="ghostty"
-{{- else if .chezmoi.kernel.osrelease | lower | contains "microsoft" }}
+{{- else if and (hasKey .chezmoi.kernel "osrelease") (contains "microsoft" (.chezmoi.kernel.osrelease | lower)) }}
 # On WSL, wt.exe refers to the Windows Terminal host
 export TERMINAL="wt.exe"
 {{- end }}
