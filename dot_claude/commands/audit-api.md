@@ -1,28 +1,24 @@
-Audit the Laravel API endpoint(s) below. Flag issues only — do not rewrite.
+Audit Laravel API endpoints. Flag issues only; no rewrites.
 
 $ARGUMENTS
 
-For each endpoint, output:
-
+**Format per endpoint:**
 ---
 **Endpoint:** `[METHOD /path]`
 
 | Concern | Status | Notes |
 |---|---|---|
-| **Tenancy Scope** | SCOPED / UNSCOPED / N/A | `BelongsToTenant` present? `tenant_id` in all queries? |
-| **Auth** | PASS / FAIL / MISSING | Sanctum middleware on route? |
-| **Authorization** | PASS / FAIL / MISSING | Policy invoked? Spatie permission check? |
-| **Validation** | PASS / FAIL / MISSING | Form Request class? All fields covered? |
-| **Response Shape** | PASS / FAIL / INCONSISTENT | `ApiResponse` structure? Correct HTTP status codes? |
-| **PHPStan L5** | PASS / VIOLATIONS | Visible return type issues, nullable mismatches |
-| **N+1 Risk** | NONE / POSSIBLE / CONFIRMED | Missing `with()` on relationships? |
-| **Error Handling** | ADEQUATE / GAPS | 404, 403, 422 handled appropriately? |
+| **Tenancy** | SCOPED/UNSCOPED | `BelongsToTenant` / `tenant_id` present? |
+| **Auth/Policy**| PASS/FAIL | Sanctum + Spatie Policy check? |
+| **Validation** | PASS/FAIL | FormRequest used + all fields covered? |
+| **Response** | PASS/FAIL | `ApiResponse` shape + correct status? |
+| **PHPStan L5** | PASS/FAIL | Return types + nullable mismatches. |
+| **N+1 Risk** | NONE/RISK | Missing `with()` relationship eager loads? |
 
 **Issues:**
-- [CRITICAL | WARN | INFO] Description → `file:line` if available
-
+- [CRITICAL | WARN | INFO] Description → `file:line`
 ---
 
-HTTP status code reference: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable Entity, 500 Internal Server Error.
-
-If no issues found in a category, state PASS and move on.
+**Constraints:**
+- Use standard codes: 200, 201, 204, 400, 401, 403, 404, 409, 422, 500.
+- If category passes, state PASS and skip notes.
