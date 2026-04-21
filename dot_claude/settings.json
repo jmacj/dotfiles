@@ -1,0 +1,34 @@
+{
+  "model": "claude-opus-4-7",
+  "theme": "dark",
+  "permissions": {
+    "allow": [
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm outdated:*)",
+      "Bash(composer show:*)",
+      "Bash(composer validate:*)",
+      "Bash(php artisan route:list:*)",
+      "Bash(php artisan migrate:status:*)",
+      "Bash(php artisan model:show:*)",
+      "Bash(php -l:*)",
+      "Bash(phpstan analyse:*)",
+      "Bash(./vendor/bin/pint --test:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(DROP TABLE:*)",
+      "Bash(truncate:*)"
+    ]
+  }
+}

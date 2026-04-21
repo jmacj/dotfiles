@@ -1,0 +1,29 @@
+{
+  "_unofficial": "UNOFFICIAL — ~/.claude.json is not a native Claude Code config format as of April 2026. This file is aspirational workspace documentation. Per-task model routing and workspace scoping are not supported in settings.json. Approximate each feature using the noted workarounds.",
+
+  "workspace": {
+    "_note": "Workaround: add ~/code project paths to Claude Code's trusted directories via settings.json allowedDirectories if/when supported.",
+    "root": "~/code"
+  },
+
+  "models": {
+    "_note": "Workaround: use `meta+p` (model picker) or `/model <id>` in-session to switch. These are documented preferences, not enforced config.",
+    "architecture": "claude-opus-4-7",
+    "review":       "claude-opus-4-7",
+    "coding":       "claude-sonnet-4-6",
+    "quick":        "claude-haiku-4-5-20251001"
+  },
+
+  "strictness": {
+    "_note": "Workaround: these are enforced via PHPStan/Pint in CI, not by Claude Code settings.",
+    "php": {
+      "phpstan": 5,
+      "pint":    true,
+      "strictTypes": true
+    },
+    "typescript": {
+      "noImplicitAny": true,
+      "genericPropsOnly": true
+    }
+  }
+}
