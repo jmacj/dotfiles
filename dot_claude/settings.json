@@ -1,6 +1,4 @@
 {
-  "model": "claude-opus-4-7",
-  "theme": "dark",
   "permissions": {
     "allow": [
       "Bash(git log:*)",
@@ -30,5 +28,10 @@
       "Bash(DROP TABLE:*)",
       "Bash(truncate:*)"
     ]
+  },
+  "theme": "dark",
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/jan/.claude/statusline-command.sh"
   }
 }
