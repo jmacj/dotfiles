@@ -202,26 +202,47 @@ cpr() {
 # Remove a worktree. Picks interactively with fzf if no argument given.
 # Steps out to repo root first if currently inside the worktree being removed.
 wtr() {
-  local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
+  local wt_list; wt_list=$(git worktree list --porcelain)
+  local root; root=$(echo "$wt_list" | awk 'NR==1{print substr($0, 10)}')
   root=$(_code_root_posix "$root")
-  local code_root; code_root=$(_code_root_posix)
-  local rel="${root#$code_root/}"
   local branch="${1:-}"
+  local wtpath
 
   if [ -z "$branch" ]; then
-    branch=$(git worktree list --porcelain \
-      | awk '/^worktree /{print $2}' \
-      | grep "$code_root/$rel.worktrees/" \
-      | sed "s|$code_root/$rel.worktrees/||" \
-      | fzf --prompt="Remove Worktree > " --height=~40% --layout=reverse --border)
+    local selection
+    selection=$(echo "$wt_list" | awk -v root="$root" '
+      /^worktree / { wt=substr($0, 10) }
+      /^branch / {
+        br=substr($0, 19);
+        if (wt != root) print br "\t" wt
+      }
+    ' | fzf --prompt="Remove Worktree > " --height=~40% --layout=reverse --border --delimiter=$'\t' --with-nth=1)
+
+    [ -z "$selection" ] && return 0
+    branch=$(echo "$selection" | cut -f1)
+    wtpath=$(echo "$selection" | cut -f2)
+  else
+    wtpath=$(echo "$wt_list" | awk -v br="$branch" '
+      /^worktree / { wt=substr($0, 10) }
+      /^branch / {
+        current_br=substr($0, 19);
+        if (current_br == br) print wt
+      }
+    ')
+    if [ -z "$wtpath" ]; then
+      echo "✗ No worktree found for branch '$branch'"
+      return 1
+    fi
   fi
 
-  [ -z "$branch" ] && return 0
-  local wtpath="$code_root/$rel.worktrees/$branch"
   local wtpath_g; wtpath_g=$(_to_git_path "$wtpath")
 
-  case "$PWD" in
-    "$wtpath"*) cd "$root" ;;
+  # Step out if inside the worktree being removed
+  local current_pwd; current_pwd=$(_code_root_posix "$PWD")
+  local target_wtpath; target_wtpath=$(_code_root_posix "$wtpath")
+
+  case "$current_pwd" in
+    "$target_wtpath"*) cd "$root" ;;
   esac
 
   git worktree remove "$wtpath_g" --force \
@@ -234,35 +255,52 @@ wtr() {
 # List all worktrees for the current repo with their branches.
 wtls() {
   git worktree list --porcelain \
-    | awk '/^worktree /{wt=$2} /^branch /{print wt, "→", $2}' \
-    | column -t
+    | awk '
+        /^worktree / { wt=substr($0, 10) }
+        /^branch / { br=substr($0, 19); print wt "\t→\t" br }
+      ' \
+    | column -t -s $'\t'
 }
 
 # cdwt
 # Jump to any worktree of the current repo interactively via fzf.
 cdwt() {
-  local wt
-  wt=$(git worktree list --porcelain \
-    | awk '/^worktree /{print $2}' \
-    | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border)
-  [ -n "$wt" ] && cd "$wt"
+  local selection
+  selection=$(git worktree list --porcelain \
+    | awk '
+        /^worktree / { wt=substr($0, 10) }
+        /^branch / { br=substr($0, 19); print br "\t" wt }
+      ' \
+    | fzf --prompt="Jump to Worktree > " --height=~40% --layout=reverse --border --delimiter=$'\t' --with-nth=1)
+
+  [ -n "$selection" ] && cd "$(echo "$selection" | cut -f2)"
 }
 
 # wtdone
 # Run from inside a feature/PR worktree after the branch is merged.
 # Removes the worktree, deletes local branch, prunes stale entries, returns to repo root.
 wtdone() {
-  local root; root=$(git worktree list --porcelain | awk 'NR==1{print $2}')
-  root=$(_code_root_posix "$root")
+  local wt_list; wt_list=$(git worktree list --porcelain)
+  local root; root=$(echo "$wt_list" | awk 'NR==1{print substr($0, 10)}')
+  local wtpath; wtpath=$(git rev-parse --show-toplevel 2>/dev/null) || return 1
   local branch; branch=$(git rev-parse --abbrev-ref HEAD)
+
+  if [ "$(_code_root_posix "$wtpath")" = "$(_code_root_posix "$root")" ]; then
+    echo "✗ You're in the main worktree — run this from inside a feature worktree"
+    return 1
+  fi
 
   case "$branch" in
     main|master) echo "✗ You're on main/master — run this from inside a feature worktree"; return 1 ;;
   esac
 
+  local wtpath_g; wtpath_g=$(_to_git_path "$wtpath")
+
+  # Calculate rel for the message
   local code_root; code_root=$(_code_root_posix)
-  local rel="${root#$code_root/}"
-  local wtpath_g; wtpath_g=$(_to_git_path "$code_root/$rel.worktrees/$branch")
+  local root_posix; root_posix=$(_code_root_posix "$root")
+  local rel="${root_posix#$code_root/}"
+
   cd "$root" || return 1
   git worktree remove "$wtpath_g" --force \
     && git branch -d "$branch" 2>/dev/null; true \
